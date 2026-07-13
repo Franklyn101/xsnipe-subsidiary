@@ -34,7 +34,7 @@ export default function AISnipersPage() {
     maxBuyAmount: "0.1",
     slippage: "5",
     gasPrice: "auto",
-    snipeInterval: "2500",
+    snipeInterval: "65000",
   })
   const [stats, setStats] = useState({
     totalSnipes: 0,
@@ -175,7 +175,7 @@ export default function AISnipersPage() {
 
           setLiveSnipes((prev) => prev.filter((snipe) => snipe.id !== newSnipe.id))
         },
-        Math.random() * 4000 + 1000,
+        Math.random() * 20000 + 65000,
       )
     } catch (error) {
       console.error("Error simulating snipe:", error)
