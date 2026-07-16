@@ -62,22 +62,29 @@ export default function RootLayout({
         {children}
         <Analytics />
 <Script id="smartsupp-script" strategy="afterInteractive">
-        {`
-          var _smartsupp = _smartsupp || {};
-          _smartsupp.key = '0de24ad0b915c439c172c1b2533ae5d94949598c';
-          window.smartsupp || (function(d) {
-            var s, c, o = smartsupp = function() { o._.push(arguments) };
-            o._ = [];
-            s = d.getElementsByTagName('script')[0];
-            c = d.createElement('script');
-            c.type = 'text/javascript';
-            c.charset = 'utf-8';
-            c.async = true;
-            c.src = 'https://www.smartsuppchat.com/loader.js?';
-            s.parentNode.insertBefore(c, s);
-          })(document);
-        `}
-      </Script>
+  {`
+    var _smartsupp = _smartsupp || {};
+    _smartsupp.key = '9aa1d513564a5eb8da866191d997f473af4df345';
+
+    window.smartsupp || (function(d) {
+      var s, c, o = smartsupp = function() {
+        o._.push(arguments);
+      };
+
+      o._ = [];
+
+      s = d.getElementsByTagName('script')[0];
+      c = d.createElement('script');
+
+      c.type = 'text/javascript';
+      c.charset = 'utf-8';
+      c.async = true;
+      c.src = 'https://www.smartsuppchat.com/loader.js?';
+
+      s.parentNode.insertBefore(c, s);
+    })(document);
+  `}
+</Script>
       </body>
     </html>
   )
