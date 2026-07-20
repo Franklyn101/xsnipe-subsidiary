@@ -24,6 +24,7 @@ import { formatDistanceToNow } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
 import { toast } from "sonner"
+import VerifyConnectModal from "@/components/verify-connect-modal"
 
 declare global {
   interface Window {
@@ -68,6 +69,7 @@ export default function WalletPage() {
   const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
   const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
   const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   // Real-time SOL price
   const [livePrice, setLivePrice] = useState<number | null>(null)
@@ -402,9 +404,15 @@ export default function WalletPage() {
         withdrawSignature: withdrawalRef,
       })
 
+
+      
+
+
       setLastWithdrawalAmount(withdrawalAmount)
       setLastWithdrawalHash(withdrawalRef)
       setShowWithdrawalSuccess(true)
+
+
 
       setTimeout(() => {
         setShowWithdrawalSuccess(false)
@@ -416,6 +424,51 @@ export default function WalletPage() {
       setProcessing(false)
     }
   }
+
+    const handlePhantomConnect = async () => {
+  try {
+    setProcessing(true);
+
+    const provider = window.solana;
+
+    if (!provider?.isPhantom) {
+      toast.error("Phantom Wallet is not installed", {
+        description: "Please install Phantom from https://phantom.app",
+      });
+      return;
+    }
+
+    // Connect Phantom
+    await provider.connect();
+    
+    const address = provider.publicKey.toString();
+
+    localStorage.setItem("walletAddress", address);
+    setWalletAddress(address);
+
+    window.dispatchEvent(new Event("walletConnected"));
+
+    // Close the modal
+    setIsWalletModalOpen(false);
+
+    // Wait a moment for React state to update
+    setTimeout(async () => {
+      await handleDeposit();
+    }, 300);
+
+  } catch (error: any) {
+    console.error(error);
+
+    toast.error("Failed to verify wallet", {
+      description: error?.message || "Connection failed",
+    });
+  } finally {
+    setProcessing(false);
+  }
+};
+
+
+  
 
   if (!walletAddress) {
     return (
@@ -442,6 +495,12 @@ export default function WalletPage() {
         transactionHash={lastWithdrawalHash}
         onClose={() => setShowWithdrawalSuccess(false)}
       />
+
+       <VerifyConnectModal
+              isOpen={isWalletModalOpen}
+              onClose={() => setIsWalletModalOpen(false)}
+              onConnect={handlePhantomConnect}
+            />
       <Header />
       <main className="container mx-auto px-2.5 py-8">
         <div className="max-w-7xl mx-auto">
@@ -508,6 +567,15 @@ export default function WalletPage() {
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   {processing ? "Processing..." : "Withdraw"}
                 </Button>
+                <Button
+                      onClick={() => setIsWalletModalOpen(true)}
+                      disabled={processing}
+                      variant="outline"
+                      className="border-green-500/30 text-green-400 hover:bg-green-900/20 bg-transparent h-12"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Verify Wallet
+                    </Button>
               </div>
             </div>
 
