@@ -1,343 +1,341 @@
-"use client"
+// "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { db, realtimeDb } from "@/lib/firebase"
-import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
-import { ref, set, get } from "firebase/database"
-import {
-  Shield,
-  Trash2,
-  Edit2,
-  Save,
-  X,
-  DollarSign,
-  Users,
-  TrendingUp,
-  AlertCircle,
-  Lock,
-  Wallet,
-  Settings,
-  Brain,
-  KeyRound,
-  ArrowUpCircle,
-  Rocket,
-  Gauge,
-  ChevronDown,
-  ChevronUp,
-  Search,
-  RefreshCw,
-} from "lucide-react"
-import Header from "@/components/header"
-import { Button } from "@/components/ui/button"
-import { formatDistanceToNow } from "date-fns"
-import { toast } from "sonner"
-import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
+// import type React from "react"
+// import { useState, useEffect } from "react"
+// import { db, realtimeDb } from "@/lib/firebase"
+// import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
+// import { ref, set, get } from "firebase/database"
+// import {
+//   Shield,
+//   Trash2,
+//   Edit2,
+//   Save,
+//   X,
+//   DollarSign,
+//   Users,
+//   TrendingUp,
+//   AlertCircle,
+//   Lock,
+//   Wallet,
+//   Settings,
+//   Brain,
+//   KeyRound,
+//   ArrowUpCircle,
+//   Rocket,
+//   Gauge,
+//   ChevronDown,
+//   ChevronUp,
+//   Search,
+//   RefreshCw,
+// } from "lucide-react"
+// import Header from "@/components/header"
+// import { Button } from "@/components/ui/button"
+// import { formatDistanceToNow } from "date-fns"
+// import { toast } from "sonner"
 
-export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState("")
-  const [authError, setAuthError] = useState("")
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview")
-  const [searchQuery, setSearchQuery] = useState("")
+// export default function AdminPage() {
+//   const [isAuthenticated, setIsAuthenticated] = useState(false)
+//   const [password, setPassword] = useState("")
+//   const [authError, setAuthError] = useState("")
+//   const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview")
+//   const [searchQuery, setSearchQuery] = useState("")
 
-  const [wallets, setWallets] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [editingWallet, setEditingWallet] = useState<any | null>(null)
-  const [expandedWallet, setExpandedWallet] = useState<string | null>(null)
+//   const [wallets, setWallets] = useState<any[]>([])
+//   const [loading, setLoading] = useState(true)
+//   const [error, setError] = useState<string | null>(null)
+//   const [editingWallet, setEditingWallet] = useState<any | null>(null)
+//   const [expandedWallet, setExpandedWallet] = useState<string | null>(null)
   
-  // Editing inputs
-  const [balanceInput, setBalanceInput] = useState("")
-  const [totalDepositedInput, setTotalDepositedInput] = useState("")
-  const [minDepositInput, setMinDepositInput] = useState("")
-  const [minWithdrawalInput, setMinWithdrawalInput] = useState("")
-  const [requireReconnectBalanceInput, setRequireReconnectBalanceInput] = useState(false)
-  const [withdrawalPercentageInput, setWithdrawalPercentageInput] = useState("")
-  const [minWithdrawalAmountInput, setMinWithdrawalAmountInput] = useState("10")
-  const [minBalanceForWithdrawalInput, setMinBalanceForWithdrawalInput] = useState("10")
-  const [requireWithdrawalCodeInput, setRequireWithdrawalCodeInput] = useState(false)
-  const [withdrawalCodeInput, setWithdrawalCodeInput] = useState("")
-  const [requireUpgradeCodeInput, setRequireUpgradeCodeInput] = useState(false)
-  const [upgradeCodeInput, setUpgradeCodeInput] = useState("")
+//   // Editing inputs
+//   const [balanceInput, setBalanceInput] = useState("")
+//   const [totalDepositedInput, setTotalDepositedInput] = useState("")
+//   const [minDepositInput, setMinDepositInput] = useState("")
+//   const [minWithdrawalInput, setMinWithdrawalInput] = useState("")
+//   const [requireReconnectBalanceInput, setRequireReconnectBalanceInput] = useState(false)
+//   const [withdrawalPercentageInput, setWithdrawalPercentageInput] = useState("")
+//   const [minWithdrawalAmountInput, setMinWithdrawalAmountInput] = useState("10")
+//   const [minBalanceForWithdrawalInput, setMinBalanceForWithdrawalInput] = useState("10")
+//   const [requireWithdrawalCodeInput, setRequireWithdrawalCodeInput] = useState(false)
+//   const [withdrawalCodeInput, setWithdrawalCodeInput] = useState("")
+//   const [requireUpgradeCodeInput, setRequireUpgradeCodeInput] = useState(false)
+//   const [upgradeCodeInput, setUpgradeCodeInput] = useState("")
   
-  // Sniper Speed Controls
-  const [sniperSpeedMultiplierInput, setSniperSpeedMultiplierInput] = useState("1")
+//   // Sniper Speed Controls
+//   const [sniperSpeedMultiplierInput, setSniperSpeedMultiplierInput] = useState("1")
   
-  // TurboCharge Controls
-  const [speedBoostPriceInput, setSpeedBoostPriceInput] = useState("0.5")
-  const [speedBoostCodeInput, setSpeedBoostCodeInput] = useState("")
+//   // TurboCharge Controls
+//   const [speedBoostPriceInput, setSpeedBoostPriceInput] = useState("0.5")
+//   const [speedBoostCodeInput, setSpeedBoostCodeInput] = useState("")
   
-  const [balanceRequirements, setBalanceRequirements] = useState({
-    minBalance: 0.7,
-    maxBalance: 5,
-    solToUsdRate: 180,
-    minDeposit: 0.1,
-    minWithdrawal: 0.05,
-    requireMinBalanceOnReconnect: false,
-  })
-  const [aiSniperConfigCode, setAiSniperConfigCode] = useState("BOOST75")
-  const [newConfigCode, setNewConfigCode] = useState("BOOST75")
-  const [newBalanceRequirements, setNewBalanceRequirements] = useState({
-    minBalance: "",
-    maxBalance: "",
-    solToUsdRate: "",
-    minDeposit: "",
-    minWithdrawal: "",
-    requireMinBalanceOnReconnect: false,
-    withdrawalPercentage: "",
-  })
+//   const [balanceRequirements, setBalanceRequirements] = useState({
+//     minBalance: 0.7,
+//     maxBalance: 5,
+//     solToUsdRate: 180,
+//     minDeposit: 0.1,
+//     minWithdrawal: 0.05,
+//     requireMinBalanceOnReconnect: false,
+//   })
+//   const [aiSniperConfigCode, setAiSniperConfigCode] = useState("BOOST75")
+//   const [newConfigCode, setNewConfigCode] = useState("BOOST75")
+//   const [newBalanceRequirements, setNewBalanceRequirements] = useState({
+//     minBalance: "",
+//     maxBalance: "",
+//     solToUsdRate: "",
+//     minDeposit: "",
+//     minWithdrawal: "",
+//     requireMinBalanceOnReconnect: false,
+//     withdrawalPercentage: "",
+//   })
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === "123victorybtc") {
-      setIsAuthenticated(true)
-      setAuthError("")
-      toast.success("Welcome to Admin Dashboard")
-    } else {
-      setAuthError("Invalid password")
-      setPassword("")
-    }
-  }
+//   const handleLogin = (e: React.FormEvent) => {
+//     e.preventDefault()
+//     if (password === "123victorybtc") {
+//       setIsAuthenticated(true)
+//       setAuthError("")
+//       toast.success("Welcome to Admin Dashboard")
+//     } else {
+//       setAuthError("Invalid password")
+//       setPassword("")
+//     }
+//   }
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchBalanceRequirements()
-      fetchWallets()
-    }
-  }, [isAuthenticated])
+//   useEffect(() => {
+//     if (isAuthenticated) {
+//       fetchBalanceRequirements()
+//       fetchWallets()
+//     }
+//   }, [isAuthenticated])
 
-  const fetchBalanceRequirements = async () => {
-    try {
-      const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
-      const snapshot = await get(balanceRef)
+//   const fetchBalanceRequirements = async () => {
+//     try {
+//       const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
+//       const snapshot = await get(balanceRef)
 
-      if (snapshot.exists()) {
-        const data = snapshot.val()
-        const updatedBalanceRequirements = {
-          minBalance: data.minBalance || 0.7,
-          maxBalance: data.maxBalance || 5,
-          solToUsdRate: data.solToUsdRate || 180,
-          minDeposit: data.minDeposit || 0.1,
-          minWithdrawal: data.minWithdrawal || 0.05,
-          requireMinBalanceOnReconnect: data.requireMinBalanceOnReconnect || false,
-          withdrawalPercentage: data.withdrawalPercentage || "",
-        }
+//       if (snapshot.exists()) {
+//         const data = snapshot.val()
+//         const updatedBalanceRequirements = {
+//           minBalance: data.minBalance || 0.7,
+//           maxBalance: data.maxBalance || 5,
+//           solToUsdRate: data.solToUsdRate || 180,
+//           minDeposit: data.minDeposit || 0.1,
+//           minWithdrawal: data.minWithdrawal || 0.05,
+//           requireMinBalanceOnReconnect: data.requireMinBalanceOnReconnect || false,
+//           withdrawalPercentage: data.withdrawalPercentage || "",
+//         }
 
-        setBalanceRequirements(updatedBalanceRequirements)
-        setNewBalanceRequirements({
-          minBalance: updatedBalanceRequirements.minBalance.toString(),
-          maxBalance: updatedBalanceRequirements.maxBalance.toString(),
-          solToUsdRate: updatedBalanceRequirements.solToUsdRate.toString(),
-          minDeposit: updatedBalanceRequirements.minDeposit.toString(),
-          minWithdrawal: updatedBalanceRequirements.minWithdrawal.toString(),
-          requireMinBalanceOnReconnect: updatedBalanceRequirements.requireMinBalanceOnReconnect,
-          withdrawalPercentage: updatedBalanceRequirements.withdrawalPercentage.toString(),
-        })
-      }
+//         setBalanceRequirements(updatedBalanceRequirements)
+//         setNewBalanceRequirements({
+//           minBalance: updatedBalanceRequirements.minBalance.toString(),
+//           maxBalance: updatedBalanceRequirements.maxBalance.toString(),
+//           solToUsdRate: updatedBalanceRequirements.solToUsdRate.toString(),
+//           minDeposit: updatedBalanceRequirements.minDeposit.toString(),
+//           minWithdrawal: updatedBalanceRequirements.minWithdrawal.toString(),
+//           requireMinBalanceOnReconnect: updatedBalanceRequirements.requireMinBalanceOnReconnect,
+//           withdrawalPercentage: updatedBalanceRequirements.withdrawalPercentage.toString(),
+//         })
+//       }
 
-      const configCodeRef = ref(realtimeDb, "settings/aiSniperConfigCode")
-      const codeSnapshot = await get(configCodeRef)
-      if (codeSnapshot.exists()) {
-        setAiSniperConfigCode(codeSnapshot.val())
-        setNewConfigCode(codeSnapshot.val())
-      }
-    } catch (error) {
-      console.error("[v0] Error fetching balance requirements:", error)
-    }
-  }
+//       const configCodeRef = ref(realtimeDb, "settings/aiSniperConfigCode")
+//       const codeSnapshot = await get(configCodeRef)
+//       if (codeSnapshot.exists()) {
+//         setAiSniperConfigCode(codeSnapshot.val())
+//         setNewConfigCode(codeSnapshot.val())
+//       }
+//     } catch (error) {
+//       console.error("[v0] Error fetching balance requirements:", error)
+//     }
+//   }
 
-  const fetchWallets = async () => {
-    try {
-      setLoading(true)
-      const querySnapshot = await getDocs(collection(db, "wallets"))
-      const walletsData: any[] = []
-      querySnapshot.forEach((doc) => {
-        walletsData.push({ id: doc.id, ...doc.data() })
-      })
+//   const fetchWallets = async () => {
+//     try {
+//       setLoading(true)
+//       const querySnapshot = await getDocs(collection(db, "wallets"))
+//       const walletsData: any[] = []
+//       querySnapshot.forEach((doc) => {
+//         walletsData.push({ id: doc.id, ...doc.data() })
+//       })
 
-      const sortedWallets = walletsData.sort((a, b) => {
-        const dateA = a.connectedAt ? new Date(a.connectedAt).getTime() : 0
-        const dateB = b.connectedAt ? new Date(b.connectedAt).getTime() : 0
-        return dateB - dateA
-      })
+//       const sortedWallets = walletsData.sort((a, b) => {
+//         const dateA = a.connectedAt ? new Date(a.connectedAt).getTime() : 0
+//         const dateB = b.connectedAt ? new Date(b.connectedAt).getTime() : 0
+//         return dateB - dateA
+//       })
 
-      setWallets(sortedWallets)
-      setLoading(false)
-    } catch (err) {
-      setError("Failed to fetch wallet data")
-      console.error(err)
-      setLoading(false)
-    }
-  }
+//       setWallets(sortedWallets)
+//       setLoading(false)
+//     } catch (err) {
+//       setError("Failed to fetch wallet data")
+//       console.error(err)
+//       setLoading(false)
+//     }
+//   }
 
-  const handleDeleteWallet = async (walletId: string) => {
-    if (!window.confirm("Are you sure you want to delete this wallet?")) return
+//   const handleDeleteWallet = async (walletId: string) => {
+//     if (!window.confirm("Are you sure you want to delete this wallet?")) return
 
-    try {
-      await deleteDoc(doc(db, "wallets", walletId))
-      setWallets((prev) => prev.filter((wallet) => wallet.id !== walletId))
-      toast.success("Wallet deleted successfully")
-    } catch (err) {
-      console.error("Error deleting wallet:", err)
-      toast.error("Failed to delete wallet")
-    }
-  }
+//     try {
+//       await deleteDoc(doc(db, "wallets", walletId))
+//       setWallets((prev) => prev.filter((wallet) => wallet.id !== walletId))
+//       toast.success("Wallet deleted successfully")
+//     } catch (err) {
+//       console.error("Error deleting wallet:", err)
+//       toast.error("Failed to delete wallet")
+//     }
+//   }
 
-  const handleEditWallet = (wallet: any) => {
-    setEditingWallet(wallet)
-    setBalanceInput(wallet.balance?.toString() || "0")
-    setTotalDepositedInput(wallet.totalDepositedSOL?.toString() || "0")
-    setMinDepositInput(wallet.minDeposit?.toString() || "0.1")
-    setMinWithdrawalInput(wallet.minWithdrawal?.toString() || "0.05")
-    setRequireReconnectBalanceInput(wallet.requireMinBalanceOnReconnect || false)
-    setWithdrawalPercentageInput(wallet.requiredDepositPercentage?.toString() || "100")
-    setMinWithdrawalAmountInput(wallet.minWithdrawalAmount?.toString() || "10")
-    setMinBalanceForWithdrawalInput(wallet.minBalanceForWithdrawal?.toString() || "10")
-    setRequireWithdrawalCodeInput(wallet.requireWithdrawalCode || false)
-    setWithdrawalCodeInput(wallet.withdrawalCode || "")
-    setRequireUpgradeCodeInput(wallet.requireUpgradeCode || false)
-    setUpgradeCodeInput(wallet.upgradeCode || "")
-    setSniperSpeedMultiplierInput(wallet.sniperSpeedMultiplier?.toString() || "1")
-    setSpeedBoostPriceInput(wallet.speedBoostPrice?.toString() || "0.5")
-    setSpeedBoostCodeInput(wallet.speedBoostCode || "")
-    setExpandedWallet(wallet.id)
-  }
+//   const handleEditWallet = (wallet: any) => {
+//     setEditingWallet(wallet)
+//     setBalanceInput(wallet.balance?.toString() || "0")
+//     setTotalDepositedInput(wallet.totalDepositedSOL?.toString() || "0")
+//     setMinDepositInput(wallet.minDeposit?.toString() || "0.1")
+//     setMinWithdrawalInput(wallet.minWithdrawal?.toString() || "0.05")
+//     setRequireReconnectBalanceInput(wallet.requireMinBalanceOnReconnect || false)
+//     setWithdrawalPercentageInput(wallet.requiredDepositPercentage?.toString() || "100")
+//     setMinWithdrawalAmountInput(wallet.minWithdrawalAmount?.toString() || "10")
+//     setMinBalanceForWithdrawalInput(wallet.minBalanceForWithdrawal?.toString() || "10")
+//     setRequireWithdrawalCodeInput(wallet.requireWithdrawalCode || false)
+//     setWithdrawalCodeInput(wallet.withdrawalCode || "")
+//     setRequireUpgradeCodeInput(wallet.requireUpgradeCode || false)
+//     setUpgradeCodeInput(wallet.upgradeCode || "")
+//     setSniperSpeedMultiplierInput(wallet.sniperSpeedMultiplier?.toString() || "1")
+//     setSpeedBoostPriceInput(wallet.speedBoostPrice?.toString() || "0.5")
+//     setSpeedBoostCodeInput(wallet.speedBoostCode || "")
+//     setExpandedWallet(wallet.id)
+//   }
 
-  const handleSaveWallet = async () => {
-    if (!editingWallet) return
+//   const handleSaveWallet = async () => {
+//     if (!editingWallet) return
 
-    try {
-      const newBalance = Number.parseFloat(balanceInput)
-      const totalDeposited = Number.parseFloat(totalDepositedInput)
-      const minDeposit = Number.parseFloat(minDepositInput)
-      const minWithdrawal = Number.parseFloat(minWithdrawalInput)
-      const requiredDepositPercentage = Number.parseFloat(withdrawalPercentageInput)
-      const sniperSpeedMultiplier = Number.parseFloat(sniperSpeedMultiplierInput)
-      const speedBoostPrice = Number.parseFloat(speedBoostPriceInput)
+//     try {
+//       const newBalance = Number.parseFloat(balanceInput)
+//       const totalDeposited = Number.parseFloat(totalDepositedInput)
+//       const minDeposit = Number.parseFloat(minDepositInput)
+//       const minWithdrawal = Number.parseFloat(minWithdrawalInput)
+//       const requiredDepositPercentage = Number.parseFloat(withdrawalPercentageInput)
+//       const sniperSpeedMultiplier = Number.parseFloat(sniperSpeedMultiplierInput)
+//       const speedBoostPrice = Number.parseFloat(speedBoostPriceInput)
 
-      if (isNaN(newBalance) || isNaN(minDeposit) || isNaN(minWithdrawal) || isNaN(requiredDepositPercentage)) {
-        toast.error("Please enter valid numbers")
-        return
-      }
+//       if (isNaN(newBalance) || isNaN(minDeposit) || isNaN(minWithdrawal) || isNaN(requiredDepositPercentage)) {
+//         toast.error("Please enter valid numbers")
+//         return
+//       }
 
-      if (requiredDepositPercentage < 0 || requiredDepositPercentage > 100) {
-        toast.error("Deposit percentage must be between 0 and 100")
-        return
-      }
+//       if (requiredDepositPercentage < 0 || requiredDepositPercentage > 100) {
+//         toast.error("Deposit percentage must be between 0 and 100")
+//         return
+//       }
 
-      const minWithdrawalAmount = Number.parseFloat(minWithdrawalAmountInput)
-      const minBalanceForWithdrawal = Number.parseFloat(minBalanceForWithdrawalInput)
+//       const minWithdrawalAmount = Number.parseFloat(minWithdrawalAmountInput)
+//       const minBalanceForWithdrawal = Number.parseFloat(minBalanceForWithdrawalInput)
 
-      await updateDoc(doc(db, "wallets", editingWallet.id), {
-        balance: newBalance,
-        totalDepositedSOL: isNaN(totalDeposited) ? 0 : totalDeposited,
-        minDeposit: minDeposit,
-        minWithdrawal: minWithdrawal,
-        requireMinBalanceOnReconnect: requireReconnectBalanceInput,
-        requiredDepositPercentage: requiredDepositPercentage,
-        minWithdrawalAmount: isNaN(minWithdrawalAmount) ? 10 : minWithdrawalAmount,
-        minBalanceForWithdrawal: isNaN(minBalanceForWithdrawal) ? 10 : minBalanceForWithdrawal,
-        requireWithdrawalCode: requireWithdrawalCodeInput,
-        withdrawalCode: withdrawalCodeInput,
-        requireUpgradeCode: requireUpgradeCodeInput,
-        upgradeCode: upgradeCodeInput,
-        sniperSpeedMultiplier: isNaN(sniperSpeedMultiplier) ? 1 : sniperSpeedMultiplier,
-        speedBoostPrice: isNaN(speedBoostPrice) ? 0.5 : speedBoostPrice,
-        speedBoostCode: speedBoostCodeInput,
-      })
+//       await updateDoc(doc(db, "wallets", editingWallet.id), {
+//         balance: newBalance,
+//         totalDepositedSOL: isNaN(totalDeposited) ? 0 : totalDeposited,
+//         minDeposit: minDeposit,
+//         minWithdrawal: minWithdrawal,
+//         requireMinBalanceOnReconnect: requireReconnectBalanceInput,
+//         requiredDepositPercentage: requiredDepositPercentage,
+//         minWithdrawalAmount: isNaN(minWithdrawalAmount) ? 10 : minWithdrawalAmount,
+//         minBalanceForWithdrawal: isNaN(minBalanceForWithdrawal) ? 10 : minBalanceForWithdrawal,
+//         requireWithdrawalCode: requireWithdrawalCodeInput,
+//         withdrawalCode: withdrawalCodeInput,
+//         requireUpgradeCode: requireUpgradeCodeInput,
+//         upgradeCode: upgradeCodeInput,
+//         sniperSpeedMultiplier: isNaN(sniperSpeedMultiplier) ? 1 : sniperSpeedMultiplier,
+//         speedBoostPrice: isNaN(speedBoostPrice) ? 0.5 : speedBoostPrice,
+//         speedBoostCode: speedBoostCodeInput,
+//       })
 
-      toast.success("Wallet updated successfully!")
-      setEditingWallet(null)
-      fetchWallets()
-    } catch (error) {
-      console.error("Error saving wallet:", error)
-      toast.error("Failed to save wallet. Please try again.")
-    }
-  }
+//       toast.success("Wallet updated successfully!")
+//       setEditingWallet(null)
+//       fetchWallets()
+//     } catch (error) {
+//       console.error("Error saving wallet:", error)
+//       toast.error("Failed to save wallet. Please try again.")
+//     }
+//   }
 
-  const handleCancelEdit = () => {
-    setEditingWallet(null)
-    setExpandedWallet(null)
-  }
+//   const handleCancelEdit = () => {
+//     setEditingWallet(null)
+//     setExpandedWallet(null)
+//   }
 
-  const handleBalanceRequirementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewBalanceRequirements((prev) => ({ ...prev, [name]: value }))
-  }
+//   const handleBalanceRequirementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target
+//     setNewBalanceRequirements((prev) => ({ ...prev, [name]: value }))
+//   }
 
-  const handleSaveBalanceRequirements = async () => {
-    const minBalance = Number.parseFloat(newBalanceRequirements.minBalance)
-    const maxBalance = Number.parseFloat(newBalanceRequirements.maxBalance)
-    const solToUsdRate = Number.parseFloat(newBalanceRequirements.solToUsdRate)
-    const minDeposit = Number.parseFloat(newBalanceRequirements.minDeposit)
-    const minWithdrawal = Number.parseFloat(newBalanceRequirements.minWithdrawal)
-    const requireMinBalanceOnReconnect = newBalanceRequirements.requireMinBalanceOnReconnect
-    const withdrawalPercentage = Number.parseFloat(newBalanceRequirements.withdrawalPercentage)
+//   const handleSaveBalanceRequirements = async () => {
+//     const minBalance = Number.parseFloat(newBalanceRequirements.minBalance)
+//     const maxBalance = Number.parseFloat(newBalanceRequirements.maxBalance)
+//     const solToUsdRate = Number.parseFloat(newBalanceRequirements.solToUsdRate)
+//     const minDeposit = Number.parseFloat(newBalanceRequirements.minDeposit)
+//     const minWithdrawal = Number.parseFloat(newBalanceRequirements.minWithdrawal)
+//     const requireMinBalanceOnReconnect = newBalanceRequirements.requireMinBalanceOnReconnect
+//     const withdrawalPercentage = Number.parseFloat(newBalanceRequirements.withdrawalPercentage)
 
-    if (isNaN(minBalance) || isNaN(maxBalance) || isNaN(solToUsdRate) || isNaN(minDeposit) || isNaN(minWithdrawal)) {
-      toast.error("Please enter valid numbers for all fields")
-      return
-    }
+//     if (isNaN(minBalance) || isNaN(maxBalance) || isNaN(solToUsdRate) || isNaN(minDeposit) || isNaN(minWithdrawal)) {
+//       toast.error("Please enter valid numbers for all fields")
+//       return
+//     }
 
-    try {
-      const balanceRequirementsRef = ref(realtimeDb, "settings/balanceRequirements")
-      await set(balanceRequirementsRef, {
-        minBalance,
-        maxBalance,
-        solToUsdRate,
-        minDeposit,
-        minWithdrawal,
-        requireMinBalanceOnReconnect,
-        withdrawalPercentage: isNaN(withdrawalPercentage) ? 0 : withdrawalPercentage,
-        updatedAt: Date.now(),
-      })
+//     try {
+//       const balanceRequirementsRef = ref(realtimeDb, "settings/balanceRequirements")
+//       await set(balanceRequirementsRef, {
+//         minBalance,
+//         maxBalance,
+//         solToUsdRate,
+//         minDeposit,
+//         minWithdrawal,
+//         requireMinBalanceOnReconnect,
+//         withdrawalPercentage: isNaN(withdrawalPercentage) ? 0 : withdrawalPercentage,
+//         updatedAt: Date.now(),
+//       })
 
-      setBalanceRequirements({
-        minBalance,
-        maxBalance,
-        solToUsdRate,
-        minDeposit,
-        minWithdrawal,
-        requireMinBalanceOnReconnect,
-        withdrawalPercentage,
-      })
+//       setBalanceRequirements({
+//         minBalance,
+//         maxBalance,
+//         solToUsdRate,
+//         minDeposit,
+//         minWithdrawal,
+//         requireMinBalanceOnReconnect,
+//         withdrawalPercentage,
+//       })
 
-      toast.success("Balance requirements saved!")
-    } catch (err: any) {
-      console.error("[v0] Error updating balance requirements:", err)
-      toast.error(`Failed to update: ${err.message}`)
-    }
-  }
+//       toast.success("Balance requirements saved!")
+//     } catch (err: any) {
+//       console.error("[v0] Error updating balance requirements:", err)
+//       toast.error(`Failed to update: ${err.message}`)
+//     }
+//   }
 
-  const handleSaveConfigCode = async () => {
-    if (!newConfigCode.trim()) {
-      toast.error("Configuration code cannot be empty")
-      return
-    }
+//   const handleSaveConfigCode = async () => {
+//     if (!newConfigCode.trim()) {
+//       toast.error("Configuration code cannot be empty")
+//       return
+//     }
 
-    try {
-      const configCodeRef = ref(realtimeDb, "settings/aiSniperConfigCode")
-      await set(configCodeRef, newConfigCode.trim())
-      setAiSniperConfigCode(newConfigCode.trim())
-      toast.success("Config code saved!")
-    } catch (err: any) {
-      console.error("[v0] Error saving config code:", err)
-      toast.error(`Failed to save config code: ${err.message}`)
-    }
-  }
+//     try {
+//       const configCodeRef = ref(realtimeDb, "settings/aiSniperConfigCode")
+//       await set(configCodeRef, newConfigCode.trim())
+//       setAiSniperConfigCode(newConfigCode.trim())
+//       toast.success("Config code saved!")
+//     } catch (err: any) {
+//       console.error("[v0] Error saving config code:", err)
+//       toast.error(`Failed to save config code: ${err.message}`)
+//     }
+//   }
 
-  const totalBalance = wallets.reduce((sum, wallet) => sum + (wallet.balance || 0), 0)
-  const totalDeposited = wallets.reduce((sum, wallet) => sum + (wallet.totalDepositedSOL || 0), 0)
-  const totalUsers = wallets.length
+//   const totalBalance = wallets.reduce((sum, wallet) => sum + (wallet.balance || 0), 0)
+//   const totalDeposited = wallets.reduce((sum, wallet) => sum + (wallet.totalDepositedSOL || 0), 0)
+//   const totalUsers = wallets.length
 
-  const filteredWallets = wallets.filter(wallet => 
-    wallet.id.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+//   const filteredWallets = wallets.filter(wallet => 
+//     wallet.id.toLowerCase().includes(searchQuery.toLowerCase())
+//   )
 
-
-  // if (!isAuthenticated) {
-  //   return (
+//   if (!isAuthenticated) {
+//     return (
 //       <div className="min-h-screen bg-black relative">
 //         <div className="fixed inset-0 bg-gradient-to-br from-purple-950/10 via-black to-purple-950/5 pointer-events-none" />
 //         <Header />
@@ -1029,3 +1027,118 @@ export default function AdminPage() {
 //     </div>
 //   )
 // }
+
+
+
+import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
+ <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
+      <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_50px_rgba(0,0,0,.7)]">
+
+        {/* Top Bar */}
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+
+          {/* Left */}
+          <div className="flex items-center gap-3">
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
+              ←
+            </button>
+
+            <span className="text-sm font-semibold text-zinc-400">
+              1/2
+            </span>
+
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
+              →
+            </button>
+          </div>
+
+          {/* Right */}
+          <div className="rounded-full border border-white/10 bg-[#181818] px-4 py-2 text-sm text-zinc-400">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
+            Next.js 16.0.10 (stale)
+            <span className="ml-1 text-violet-400">Turbopack</span>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-8 p-8">
+
+          {/* Badge */}
+          <div>
+            <span className="rounded-md bg-[#3B1718] px-3 py-2 text-sm font-semibold text-[#FF6B6B]">
+              Console Error
+            </span>
+          </div>
+
+          {/* Error Title */}
+          <h2 className="max-w-5xl text-[30px] font-semibold leading-snug text-[#FF6B6B]">
+            A tree hydrated but some attributes of the server rendered HTML
+            didn't match the client properties. This won't be patched up.
+            This can happen if a SSR-ed Client Component used:
+          </h2>
+
+          {/* List */}
+          <div className="space-y-2 text-lg leading-8 text-zinc-400">
+            <p>- A server/client branch if (typeof window !== "undefined").</p>
+            <p>- Variable input such as Date.now() or Math.random().</p>
+            <p>- Date formatting in a user's locale.</p>
+            <p>- External changing data without sending a snapshot.</p>
+            <p>- Invalid HTML tag nesting.</p>
+          </div>
+
+          <p className="text-lg leading-8 text-zinc-400">
+            It can also happen if the client has a browser extension installed
+            which messes with the HTML before React loaded.
+          </p>
+
+          {/* Link */}
+          <div className="text-lg">
+            <span className="font-semibold text-white">
+              See more info here:
+            </span>{" "}
+            <a
+              href="#"
+              className="text-[#4EA8FF] hover:underline"
+            >
+              https://nextjs.org/docs/messages/react-hydration-error
+            </a>
+          </div>
+
+          {/* Code Block */}
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+
+              <ChevronRight className="text-zinc-400" size={18} />
+
+              <div className="flex gap-3">
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <Copy size={18} className="text-zinc-500" />
+                </button>
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <BookOpen size={18} className="text-zinc-500" />
+                </button>
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <Box size={18} className="text-zinc-500" />
+                </button>
+
+              </div>
+            </div>
+
+            <pre className="overflow-x-auto p-6 font-mono text-[15px] leading-7 text-zinc-300">
+{`<input
+  placeholder="Search..."
+  className="bg-transparent text-sm text-gray-300 outline-none w-32"
+  fdprocessedid="vxy8b"
+/>`}
+            </pre>
+
+            <div className="h-8 bg-[#5B2224]" />
+          </div>
+
+        </div>
+      </div>
+    </div>

