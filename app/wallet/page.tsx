@@ -928,10 +928,13 @@
 //     </div>
 //   )
 // }
-
-
+import React from 'react'
 import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
- <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
+
+
+const page = () => {
+  return (
+   <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
       <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_50px_rgba(0,0,0,.7)]">
 
         {/* Top Bar */}
@@ -971,7 +974,7 @@ import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
           </div>
 
           {/* Error Title */}
-          <h2 className="max-w-5xl text-[30px] font-semibold leading-snug text-[#FF6B6B]">
+          <h2 className="max-w-5xl text-[20px] font-semibold leading-snug text-[#FF6B6B]">
             A tree hydrated but some attributes of the server rendered HTML
             didn't match the client properties. This won't be patched up.
             This can happen if a SSR-ed Client Component used:
@@ -1042,3 +1045,11 @@ import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
         </div>
       </div>
     </div>
+  )
+}
+
+export default page
+
+
+
+ 
