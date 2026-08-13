@@ -4,6 +4,7 @@ import { Lato } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script"
 import "./globals.css"
+import FloatingTelegramButton from "@/components/floatingatelegramButton"
 
 const lato = Lato({
   subsets: ["latin"],
@@ -61,7 +62,8 @@ export default function RootLayout({
       <body className={`${lato.variable} font-sans antialiased`}>
         {children}
         <Analytics />
-<Script id="smartsupp-script" strategy="afterInteractive">
+{/* <div className="hidden">
+  <Script id="smartsupp-script" strategy="afterInteractive">
   {`
     var _smartsupp = _smartsupp || {};
     _smartsupp.key = '9aa1d513564a5eb8da866191d997f473af4df345';
@@ -85,6 +87,8 @@ export default function RootLayout({
     })(document);
   `}
 </Script>
+</div> */}
+<FloatingTelegramButton />
       </body>
     </html>
   )
