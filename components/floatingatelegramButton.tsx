@@ -31,7 +31,7 @@ export default function FloatingTelegramButton() {
             absolute
             bottom-20
             right-0
-            w-[320px]
+            w-[290px]
             overflow-hidden
             rounded-2xl
             bg-white
