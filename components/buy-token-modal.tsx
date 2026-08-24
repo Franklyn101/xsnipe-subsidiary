@@ -138,33 +138,33 @@ export default function BuyTokenModal({ isOpen, onClose, token }: BuyTokenModalP
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-md">
-        <div className="absolute inset-0 bg-blue-700/30 rounded-2xl blur-xl opacity-40 animate-pulse" />
+        <div className="absolute inset-0 bg-[#1d9bf0]/10 rounded-2xl blur-xl opacity-40 animate-pulse" />
 
-        <div className="relative bg-[#050d1a] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="relative bg-black border border-[#2f3336] rounded-2xl shadow-2xl overflow-hidden">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
+            className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors z-10"
           >
             <X className="w-6 h-6" />
           </button>
 
-          <div className="text-center pt-8 pb-6 px-4 sm:px-6 border-b border-blue-900/30">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-700 mb-4">
+          <div className="text-center pt-8 pb-6 px-4 sm:px-6 border-b border-[#2f3336]">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1d9bf0] mb-4">
               <ArrowDownUp className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Swap Token</h2>
-            <p className="text-gray-400 text-xs sm:text-sm">Enter the amount of SOL you want to swap</p>
+            <p className="text-gray-500 text-xs sm:text-sm">Enter the amount of SOL you want to swap</p>
           </div>
 
           <div className="p-4 sm:p-6 space-y-4">
-            <div className="bg-[#0a1628] border border-blue-500/20 rounded-xl p-3 sm:p-4">
+            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-3 sm:p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-xs sm:text-sm">From</span>
+                <span className="text-gray-500 text-xs sm:text-sm">From</span>
                 <div className="flex items-center gap-2">
-                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
-                  <span className="text-gray-400 text-xs sm:text-sm">Balance</span>
+                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-[#1d9bf0]" />
+                  <span className="text-gray-500 text-xs sm:text-sm">Balance</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
@@ -177,26 +177,26 @@ export default function BuyTokenModal({ isOpen, onClose, token }: BuyTokenModalP
                   min="0"
                   className="flex-1 bg-transparent text-xl sm:text-2xl text-white outline-none"
                 />
-                <div className="flex items-center gap-2 bg-blue-900/40 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full" />
+                <div className="flex items-center gap-2 bg-[#1d9bf0]/10 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1d9bf0] rounded-full" />
                   <span className="text-white font-semibold text-sm sm:text-base">SOL</span>
                 </div>
               </div>
             </div>
 
             <div className="flex justify-center">
-              <div className="w-10 h-10 bg-blue-900/30 border border-blue-500/30 rounded-full flex items-center justify-center">
-                <ArrowDownUp className="w-5 h-5 text-blue-400" />
+              <div className="w-10 h-10 bg-[#16181c] border border-[#2f3336] rounded-full flex items-center justify-center">
+                <ArrowDownUp className="w-5 h-5 text-[#1d9bf0]" />
               </div>
             </div>
 
-            <div className="bg-[#0a1628] border border-blue-500/20 rounded-xl p-3 sm:p-4">
+            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-3 sm:p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-xs sm:text-sm">To (estimated)</span>
+                <span className="text-gray-500 text-xs sm:text-sm">To (estimated)</span>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="flex-1 text-xl sm:text-2xl text-white">~{tokenAmount}</div>
-                <div className="flex items-center gap-2 bg-blue-900/40 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
+                <div className="flex items-center gap-2 bg-[#1d9bf0]/10 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
                   {token.profile.icon ? (
                     <img
                       src={token.profile.icon || "/placeholder.svg"}
@@ -204,7 +204,7 @@ export default function BuyTokenModal({ isOpen, onClose, token }: BuyTokenModalP
                       className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
                     />
                   ) : (
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full" />
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1d9bf0] rounded-full" />
                   )}
                   <span className="text-white font-semibold text-sm sm:text-base">
                     {token.profile.tokenAddress.slice(0, 4)}...{token.profile.tokenAddress.slice(-4)}
@@ -213,9 +213,9 @@ export default function BuyTokenModal({ isOpen, onClose, token }: BuyTokenModalP
               </div>
             </div>
 
-            <div className="bg-blue-900/10 border border-blue-500/20 rounded-lg p-3 flex gap-2">
-              <Info className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-              <p className="text-gray-400 text-xs">
+            <div className="bg-[#1d9bf0]/5 border border-[#1d9bf0]/20 rounded-lg p-3 flex gap-2">
+              <Info className="w-4 h-4 text-[#1d9bf0] flex-shrink-0 mt-0.5" />
+              <p className="text-gray-500 text-xs">
                 This will transfer your SOL to complete the token purchase. Transaction fees will be deducted
                 automatically.
               </p>
@@ -224,7 +224,7 @@ export default function BuyTokenModal({ isOpen, onClose, token }: BuyTokenModalP
             <Button
               onClick={handleSwap}
               disabled={isSwapping || !solAmount}
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 sm:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              className="w-full bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white font-bold py-3 sm:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isSwapping ? "Swapping..." : "Swap Now"}
             </Button>

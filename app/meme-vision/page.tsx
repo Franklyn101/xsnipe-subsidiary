@@ -60,39 +60,39 @@ export default function MemeVisionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <div className="relative">
         <Header />
         <main className="container mx-auto px-2.5 py-8">
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+              <div className="w-12 h-12 bg-[#1d9bf0] rounded-xl flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                 <Eye className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">Meme Vision</h1>
-                <p className="text-gray-400">Discover the hottest viral meme coins</p>
+                <p className="text-[#71767b]">Discover the hottest viral meme coins</p>
               </div>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-20 text-gray-400">Scanning for meme coins...</div>
+            <div className="text-center py-20 text-[#71767b]">Scanning for meme coins...</div>
           ) : tokens.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">No meme coins found</div>
+            <div className="text-center py-20 text-[#71767b]">No meme coins found</div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tokens.slice(0, 12).map((token, i) => (
                 <div
                   key={i}
-                  className="group relative bg-[#0a1628] border border-blue-900/30 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-xl hover:shadow-blue-900/20"
+                  className="group relative bg-[#16181c] border border-[#2f3336] rounded-xl p-6 hover:border-[#536471] transition-all hover:shadow-xl hover:shadow-black/30"
                 >
-                  <div className="absolute inset-0 rounded-xl bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors" />
+                  <div className="absolute inset-0 rounded-xl bg-[#1d9bf0]/0 group-hover:bg-[#1d9bf0]/[0.03] transition-colors" />
 
                   <div className="relative">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative w-14 h-14 rounded-full overflow-hidden bg-blue-700 flex items-center justify-center">
+                        <div className="relative w-14 h-14 rounded-full overflow-hidden bg-[#1d9bf0] flex items-center justify-center">
                           {token.profile.icon ? (
                             <Image
                               src={token.profile.icon || "/placeholder.svg"}
@@ -108,25 +108,27 @@ export default function MemeVisionPage() {
                           <h3 className="text-white font-bold text-lg">
                             {token.profile.tokenAddress.slice(0, 4)}...{token.profile.tokenAddress.slice(-4)}
                           </h3>
-                          <p className="text-gray-400 text-sm">Meme Token</p>
+                          <p className="text-[#71767b] text-sm">Meme Token</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 text-yellow-400 bg-yellow-900/20 px-2 py-1 rounded-lg border border-yellow-600/30">
+
+                      <div className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-lg border border-yellow-500/20">
                         <Flame className="w-4 h-4" />
                         <span className="font-bold text-sm">{Math.floor(Math.random() * 500) + 100}</span>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 mb-4">
-                      <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                        <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+                      <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                        <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                           <DollarSign className="w-3 h-3" />
                           <span>Volume</span>
                         </div>
                         <p className="text-white font-bold">{formatVolume(token.pairData.volume)}</p>
                       </div>
-                      <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                        <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+
+                      <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                        <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                           <Users className="w-3 h-3" />
                           <span>Holders</span>
                         </div>
@@ -135,17 +137,17 @@ export default function MemeVisionPage() {
                     </div>
 
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="px-2 py-1 bg-blue-900/30 text-blue-400 rounded-lg text-xs border border-blue-700/30">
+                      <span className="px-2 py-1 bg-[#1d9bf0]/10 text-[#1d9bf0] rounded-lg text-xs border border-[#1d9bf0]/20">
                         Trending
                       </span>
-                      <span className="px-2 py-1 bg-blue-900/30 text-blue-400 rounded-lg text-xs border border-blue-700/30">
+                      <span className="px-2 py-1 bg-[#1d9bf0]/10 text-[#1d9bf0] rounded-lg text-xs border border-[#1d9bf0]/20">
                         High Volume
                       </span>
                     </div>
 
                     <Button
                       onClick={() => handleBuyClick(token)}
-                      className="w-full bg-blue-700 hover:bg-blue-800 text-white shadow-lg shadow-blue-900/30"
+                      className="w-full bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white shadow-lg shadow-[#1d9bf0]/20"
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       Trade Now

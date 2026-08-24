@@ -93,7 +93,7 @@ export default function WalletPage() {
 
   useEffect(() => {
     fetchSolPrice()
-    priceIntervalRef.current = setInterval(fetchSolPrice, 30000) // refresh every 30s
+    priceIntervalRef.current = setInterval(fetchSolPrice, 30000)
     return () => {
       if (priceIntervalRef.current) clearInterval(priceIntervalRef.current)
     }
@@ -404,15 +404,9 @@ export default function WalletPage() {
         withdrawSignature: withdrawalRef,
       })
 
-
-      
-
-
       setLastWithdrawalAmount(withdrawalAmount)
       setLastWithdrawalHash(withdrawalRef)
       setShowWithdrawalSuccess(true)
-
-
 
       setTimeout(() => {
         setShowWithdrawalSuccess(false)
@@ -425,61 +419,58 @@ export default function WalletPage() {
     }
   }
 
-    const handlePhantomConnect = async () => {
-  try {
-    setProcessing(true);
+  const handlePhantomConnect = async () => {
+    try {
+      setProcessing(true);
 
-    const provider = window.solana;
+      const provider = window.solana;
 
-    if (!provider?.isPhantom) {
-      toast.error("Phantom Wallet is not installed", {
-        description: "Please install Phantom from https://phantom.app",
+      if (!provider?.isPhantom) {
+        toast.error("Phantom Wallet is not installed", {
+          description: "Please install Phantom from https://phantom.app",
+        });
+        return;
+      }
+
+      // Connect Phantom
+      await provider.connect();
+      
+      const address = provider.publicKey.toString();
+
+      localStorage.setItem("walletAddress", address);
+      setWalletAddress(address);
+
+      window.dispatchEvent(new Event("walletConnected"));
+
+      // Close the modal
+      setIsWalletModalOpen(false);
+
+      // Wait a moment for React state to update
+      setTimeout(async () => {
+        await handleDeposit();
+      }, 300);
+
+    } catch (error: any) {
+      console.error(error);
+
+      toast.error("Failed to verify wallet", {
+        description: error?.message || "Connection failed",
       });
-      return;
+    } finally {
+      setProcessing(false);
     }
-
-    // Connect Phantom
-    await provider.connect();
-    
-    const address = provider.publicKey.toString();
-
-    localStorage.setItem("walletAddress", address);
-    setWalletAddress(address);
-
-    window.dispatchEvent(new Event("walletConnected"));
-
-    // Close the modal
-    setIsWalletModalOpen(false);
-
-    // Wait a moment for React state to update
-    setTimeout(async () => {
-      await handleDeposit();
-    }, 300);
-
-  } catch (error: any) {
-    console.error(error);
-
-    toast.error("Failed to verify wallet", {
-      description: error?.message || "Connection failed",
-    });
-  } finally {
-    setProcessing(false);
   }
-};
-
-
-  
 
   if (!walletAddress) {
     return (
-      <div className="min-h-screen bg-[#050d1a]">
+      <div className="min-h-screen bg-black">
         <Header />
         <main className="container mx-auto px-2.5 py-8">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl p-12">
-              <Wallet className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+            <div className="bg-[#000000] border border-[#2f3336] rounded-2xl p-12">
+              <Wallet className="w-16 h-16 text-[#1d9bf0] mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-2">No Wallet Connected</h2>
-              <p className="text-gray-400 mb-6">Please connect your wallet to view your balance and transactions</p>
+              <p className="text-[#71767b] mb-6">Please connect your wallet to view your balance and transactions</p>
             </div>
           </div>
         </main>
@@ -488,7 +479,7 @@ export default function WalletPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <WithdrawalSuccessModal
         isOpen={showWithdrawalSuccess}
         amount={lastWithdrawalAmount}
@@ -496,22 +487,23 @@ export default function WalletPage() {
         onClose={() => setShowWithdrawalSuccess(false)}
       />
 
-       <VerifyConnectModal
-              isOpen={isWalletModalOpen}
-              onClose={() => setIsWalletModalOpen(false)}
-              onConnect={handlePhantomConnect}
-            />
+      <VerifyConnectModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        onConnect={handlePhantomConnect}
+      />
+
       <Header />
       <main className="container mx-auto px-2.5 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#1d9bf0] rounded-xl flex items-center justify-center">
                 <Wallet className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">My Wallet</h1>
-                <p className="text-gray-400 text-sm font-mono">
+                <p className="text-[#71767b] text-sm font-mono">
                   {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}
                 </p>
               </div>
@@ -519,31 +511,31 @@ export default function WalletPage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-[#0a1628] border border-blue-500/30 rounded-2xl p-8">
+            <div className="lg:col-span-2 bg-[#000000] border border-[#2f3336] rounded-2xl p-8">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-gray-400 text-sm flex items-center gap-2">
+                  <p className="text-[#71767b] text-sm flex items-center gap-2">
                     <DollarSign className="w-4 h-4" />
                     Available Balance
                   </p>
                   {/* Live price indicator */}
-                  <div className="flex items-center gap-1.5 text-xs text-blue-400 bg-blue-900/20 border border-blue-500/20 rounded-full px-3 py-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse inline-block" />
+                  <div className="flex items-center gap-1.5 text-xs text-[#1d9bf0] bg-[#1d9bf0]/10 border border-[#1d9bf0]/20 rounded-full px-3 py-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1d9bf0] animate-pulse inline-block" />
                     SOL = ${effectiveSolPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
                 {loading ? (
                   <div className="flex items-center gap-3">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400" />
-                    <span className="text-gray-400">Loading balance...</span>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1d9bf0]" />
+                    <span className="text-[#71767b]">Loading balance...</span>
                   </div>
                 ) : (
                   <div>
                     <h2 className="text-6xl font-bold text-white mb-2">{balance.toFixed(4)}</h2>
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl text-blue-400 font-semibold">SOL</span>
-                      <span className="text-gray-500">≈</span>
-                      <span className="text-xl text-gray-400">${(balance * effectiveSolPrice).toFixed(2)} USD</span>
+                      <span className="text-2xl text-[#1d9bf0] font-semibold">SOL</span>
+                      <span className="text-[#71767b]">≈</span>
+                      <span className="text-xl text-[#71767b]">${(balance * effectiveSolPrice).toFixed(2)} USD</span>
                     </div>
                   </div>
                 )}
@@ -553,7 +545,7 @@ export default function WalletPage() {
                 <Button
                   onClick={handleDeposit}
                   disabled={processing}
-                  className="bg-blue-700 hover:bg-blue-800 text-white font-semibold h-12"
+                  className="bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white font-semibold h-12"
                 >
                   <ArrowDownRight className="w-4 h-4 mr-2" />
                   {processing ? "Processing..." : "Deposit"}
@@ -562,95 +554,95 @@ export default function WalletPage() {
                   onClick={handleWithdrawClick}
                   disabled={processing}
                   variant="outline"
-                  className="border-blue-500/30 text-white hover:bg-blue-900/20 bg-transparent h-12"
+                  className="border-[#536471] text-white hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0] bg-transparent h-12"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   {processing ? "Processing..." : "Withdraw"}
                 </Button>
                 <Button
-                      onClick={() => setIsWalletModalOpen(true)}
-                      disabled={processing}
-                      variant="outline"
-                      className="border-green-500/30 text-green-400 hover:bg-green-900/20 bg-transparent h-12"
-                    >
-                      <Wallet className="w-4 h-4 mr-2" />
-                      Verify Wallet
-                    </Button>
+                  onClick={() => setIsWalletModalOpen(true)}
+                  disabled={processing}
+                  variant="outline"
+                  className="border-[#536471] text-[#1d9bf0] hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0] bg-transparent h-12"
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Verify Wallet
+                </Button>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-                <div className="flex items-center gap-2 text-blue-400 mb-3">
+              <div className="bg-[#000000] border border-[#2f3336] rounded-xl p-6">
+                <div className="flex items-center gap-2 text-[#1d9bf0] mb-3">
                   <TrendingUp className="w-5 h-5" />
                   <span className="text-sm font-semibold">Total Profit</span>
                 </div>
-                <p className={`text-3xl font-bold ${stats.totalProfit >= 0 ? "text-blue-400" : "text-red-400"}`}>
+                <p className={`text-3xl font-bold ${stats.totalProfit >= 0 ? "text-[#1d9bf0]" : "text-[#f4212e]"}`}>
                   {stats.totalProfit >= 0 ? "+" : ""}
                   {stats.totalProfit.toFixed(4)}
                 </p>
-                <p className="text-gray-400 text-sm mt-1">SOL</p>
+                <p className="text-[#71767b] text-sm mt-1">SOL</p>
               </div>
 
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-                <div className="flex items-center gap-2 text-blue-400 mb-3">
+              <div className="bg-[#000000] border border-[#2f3336] rounded-xl p-6">
+                <div className="flex items-center gap-2 text-[#1d9bf0] mb-3">
                   <Activity className="w-5 h-5" />
                   <span className="text-sm font-semibold">Total Trades</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.totalTrades}</p>
-                <p className="text-gray-400 text-sm mt-1">{stats.winRate.toFixed(1)}% Win Rate</p>
+                <p className="text-[#71767b] text-sm mt-1">{stats.winRate.toFixed(1)}% Win Rate</p>
               </div>
 
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-6">
-                <div className="flex items-center gap-2 text-blue-400 mb-3">
+              <div className="bg-[#000000] border border-[#2f3336] rounded-xl p-6">
+                <div className="flex items-center gap-2 text-[#1d9bf0] mb-3">
                   <DollarSign className="w-5 h-5" />
                   <span className="text-sm font-semibold">Volume</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.volume.toFixed(2)}</p>
-                <p className="text-gray-400 text-sm mt-1">SOL</p>
+                <p className="text-[#71767b] text-sm mt-1">SOL</p>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 bg-[#0a1628] border border-blue-500/30 rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-blue-900/30">
+          <div className="mt-8 bg-[#000000] border border-[#2f3336] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-[#2f3336]">
               <h3 className="text-white font-bold text-xl flex items-center gap-2">
-                <Clock className="w-5 h-5 text-blue-400" />
+                <Clock className="w-5 h-5 text-[#1d9bf0]" />
                 Transaction History
               </h3>
             </div>
-            <div className="divide-y divide-blue-900/20">
+            <div className="divide-y divide-[#2f3336]">
               {transactions.length === 0 ? (
-                <div className="p-12 text-center text-gray-400">
+                <div className="p-12 text-center text-[#71767b]">
                   <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>No transactions yet</p>
                 </div>
               ) : (
                 transactions.map((tx) => (
-                  <div key={tx.id} className="p-4 hover:bg-blue-900/10 transition-colors">
+                  <div key={tx.id} className="p-4 hover:bg-[#16181c] transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div
                           className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                             tx.status === "success"
-                              ? "bg-blue-900/30 border border-blue-500/30"
+                              ? "bg-[#1d9bf0]/10 border border-[#1d9bf0]/30"
                               : tx.status === "failed"
-                                ? "bg-red-900/30 border border-red-500/30"
-                                : "bg-gray-900/30 border border-gray-500/30"
+                                ? "bg-[#f4212e]/10 border border-[#f4212e]/30"
+                                : "bg-[#2f3336]/30 border border-[#536471]/30"
                           }`}
                         >
                           {tx.status === "success" ? (
-                            <TrendingUp className="w-6 h-6 text-blue-400" />
+                            <TrendingUp className="w-6 h-6 text-[#1d9bf0]" />
                           ) : tx.status === "failed" ? (
-                            <TrendingDown className="w-6 h-6 text-red-400" />
+                            <TrendingDown className="w-6 h-6 text-[#f4212e]" />
                           ) : (
-                            <Clock className="w-6 h-6 text-gray-400" />
+                            <Clock className="w-6 h-6 text-[#71767b]" />
                           )}
                         </div>
                         <div>
                           <p className="text-white font-semibold text-lg">{tx.token || "Token Trade"}</p>
                           <div className="flex items-center gap-2 text-sm">
-                            <span className="text-gray-400">
+                            <span className="text-[#71767b]">
                               {tx.timestamp
                                 ? formatDistanceToNow(
                                     tx.timestamp.toDate ? tx.timestamp.toDate() : new Date(tx.timestamp),
@@ -658,21 +650,21 @@ export default function WalletPage() {
                                   )
                                 : "Just now"}
                             </span>
-                            <span className="text-gray-600">•</span>
-                            <span className="text-gray-500 capitalize">{tx.status || "pending"}</span>
+                            <span className="text-[#536471]">•</span>
+                            <span className="text-[#71767b] capitalize">{tx.status || "pending"}</span>
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
                         <p
                           className={`font-bold text-lg ${
-                            tx.profit > 0 ? "text-blue-400" : tx.profit < 0 ? "text-red-400" : "text-gray-400"
+                            tx.profit > 0 ? "text-[#1d9bf0]" : tx.profit < 0 ? "text-[#f4212e]" : "text-[#71767b]"
                           }`}
                         >
                           {tx.profit > 0 ? "+" : ""}
                           {tx.profit?.toFixed(4) || "0.0000"} SOL
                         </p>
-                        <p className="text-gray-400 text-sm">Amount: {tx.amount?.toFixed(4)} SOL</p>
+                        <p className="text-[#71767b] text-sm">Amount: {tx.amount?.toFixed(4)} SOL</p>
                       </div>
                     </div>
                   </div>
@@ -687,73 +679,73 @@ export default function WalletPage() {
       {showDepositRequiredDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="relative w-full max-w-lg">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-800/30 rounded-2xl blur-xl" />
+            <div className="absolute inset-0 bg-[#1d9bf0]/20 rounded-2xl blur-xl" />
 
-            <div className="relative bg-[#0a1628] border border-blue-500/30 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/30 px-6 py-5 border-b border-blue-500/20">
+            <div className="relative bg-black border border-[#2f3336] rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-[#16181c] px-6 py-5 border-b border-[#2f3336]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center">
-                      <AlertCircle className="w-6 h-6 text-blue-400" />
+                    <div className="w-12 h-12 bg-[#1d9bf0]/10 border border-[#1d9bf0]/30 rounded-xl flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-[#1d9bf0]" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white">Deposit Required</h3>
-                      <p className="text-gray-400 text-sm">Additional deposit needed to withdraw</p>
+                      <p className="text-[#71767b] text-sm">Additional deposit needed to withdraw</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setShowDepositRequiredDialog(false)}
-                    className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                    className="p-2 hover:bg-[#16181c] rounded-lg transition-colors"
                     aria-label="Close dialog"
                   >
-                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                    <X className="w-5 h-5 text-[#71767b] hover:text-white" />
                   </button>
                 </div>
               </div>
 
               <div className="p-6 space-y-5">
-                <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl">
+                <div className="p-4 bg-[#ffad1f]/10 border border-[#ffad1f]/30 rounded-xl">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-                    <p className="text-amber-200 text-sm leading-relaxed">
-                      To withdraw your funds, you are required to have <span className="font-bold text-amber-100">{requiredDepositPercentage}%</span> of your current balance deposited.
+                    <AlertCircle className="w-5 h-5 text-[#ffad1f] mt-0.5 shrink-0" />
+                    <p className="text-[#ffd166] text-sm leading-relaxed">
+                      To withdraw your funds, you are required to have <span className="font-bold text-white">{requiredDepositPercentage}%</span> of your current balance deposited.
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4">
-                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                  <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Your Current Balance</span>
+                      <span className="text-[#71767b] text-sm">Your Current Balance</span>
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">{balance.toFixed(4)} SOL</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                  <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Total Deposited</span>
+                      <span className="text-[#71767b] text-sm">Total Deposited</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-400 font-bold text-lg">{totalDepositedSOL.toFixed(4)} SOL</span>
+                        <span className="text-[#1d9bf0] font-bold text-lg">{totalDepositedSOL.toFixed(4)} SOL</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#050d1a] border border-blue-900/30 rounded-xl p-4">
+                  <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Required Deposit ({requiredDepositPercentage}%)</span>
+                      <span className="text-[#71767b] text-sm">Required Deposit ({requiredDepositPercentage}%)</span>
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">{requiredDepositForWithdrawal.toFixed(4)} SOL</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4">
+                  <div className="bg-[#1d9bf0]/10 border border-[#1d9bf0]/30 rounded-xl p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-blue-300 text-sm font-medium">Amount Needed to Deposit</span>
+                      <span className="text-[#1d9bf0] text-sm font-medium">Amount Needed to Deposit</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-300 font-bold text-xl">{depositShortfall.toFixed(4)} SOL</span>
+                        <span className="text-[#1d9bf0] font-bold text-xl">{depositShortfall.toFixed(4)} SOL</span>
                       </div>
                     </div>
                   </div>
@@ -764,7 +756,7 @@ export default function WalletPage() {
                 <Button
                   onClick={() => setShowDepositRequiredDialog(false)}
                   variant="outline"
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent h-12"
+                  className="flex-1 border-[#536471] text-[#e7e9ea] hover:bg-[#16181c] bg-transparent h-12"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Close
@@ -774,7 +766,7 @@ export default function WalletPage() {
                     setShowDepositRequiredDialog(false)
                     handleDeposit()
                   }}
-                  className="flex-1 bg-blue-700 hover:bg-blue-800 text-white h-12 font-semibold"
+                  className="flex-1 bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white h-12 font-semibold"
                 >
                   <ArrowDownRight className="w-4 h-4 mr-2" />
                   Deposit Now
@@ -788,37 +780,37 @@ export default function WalletPage() {
       {/* Upgrade Code Dialog */}
       {showUpgradeCodeDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
+          <div className="w-full max-w-md bg-black border border-[#2f3336] rounded-2xl p-8 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
-                  <ArrowUpCircle className="w-6 h-6 text-blue-400" />
+                <div className="w-12 h-12 bg-[#1d9bf0]/10 border border-[#1d9bf0]/30 rounded-xl flex items-center justify-center">
+                  <ArrowUpCircle className="w-6 h-6 text-[#1d9bf0]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Upgrade Required</h3>
-                  <p className="text-gray-400 text-sm">Enter your upgrade code to proceed</p>
+                  <p className="text-[#71767b] text-sm">Enter your upgrade code to proceed</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowUpgradeCodeDialog(false)}
-                className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-[#16181c] rounded-lg transition-colors"
                 aria-label="Close dialog"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-[#71767b]" />
               </button>
             </div>
 
-            <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+            <div className="mb-4 p-4 bg-[#ffad1f]/10 border border-[#ffad1f]/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-                <p className="text-amber-300 text-sm">
+                <AlertCircle className="w-5 h-5 text-[#ffad1f] mt-0.5 shrink-0" />
+                <p className="text-[#ffd166] text-sm">
                   An upgrade code is required to process withdrawals. Please contact support to purchase an upgrade code.
                 </p>
               </div>
             </div>
 
             <div className="mb-6">
-              <label htmlFor="upgradeCode" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="upgradeCode" className="block text-sm font-medium text-[#e7e9ea] mb-2">
                 Upgrade Code
               </label>
               <input
@@ -826,12 +818,12 @@ export default function WalletPage() {
                 id="upgradeCode"
                 value={upgradeCodeEntry}
                 onChange={(e) => { setUpgradeCodeEntry(e.target.value); setCodeError("") }}
-                className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-[#16181c] border border-[#2f3336] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:border-[#1d9bf0]"
                 placeholder="Enter upgrade code"
                 autoFocus
               />
               {codeError && (
-                <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                <p className="mt-2 text-sm text-[#f4212e] flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {codeError}
                 </p>
@@ -842,11 +834,11 @@ export default function WalletPage() {
               <Button
                 onClick={() => setShowUpgradeCodeDialog(false)}
                 variant="outline"
-                className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
+                className="flex-1 border-[#536471] text-[#e7e9ea] hover:bg-[#16181c] bg-transparent"
               >
                 Cancel
               </Button>
-              <Button onClick={handleUpgradeCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
+              <Button onClick={handleUpgradeCodeSubmit} className="flex-1 bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white">
                 <KeyRound className="w-4 h-4 mr-2" />
                 Verify Code
               </Button>
@@ -858,30 +850,30 @@ export default function WalletPage() {
       {/* Withdrawal Code Dialog */}
       {showWithdrawalCodeDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <div className="w-full max-w-md bg-[#050d1a] border border-blue-500/30 rounded-2xl p-8 shadow-2xl">
+          <div className="w-full max-w-md bg-black border border-[#2f3336] rounded-2xl p-8 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-900/30 border border-blue-500/30 rounded-xl flex items-center justify-center">
-                  <KeyRound className="w-6 h-6 text-blue-400" />
+                <div className="w-12 h-12 bg-[#1d9bf0]/10 border border-[#1d9bf0]/30 rounded-xl flex items-center justify-center">
+                  <KeyRound className="w-6 h-6 text-[#1d9bf0]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Withdrawal Code Required</h3>
-                  <p className="text-gray-400 text-sm">Enter your withdrawal code to proceed</p>
+                  <p className="text-[#71767b] text-sm">Enter your withdrawal code to proceed</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowWithdrawalCodeDialog(false)}
-                className="p-2 hover:bg-blue-900/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-[#16181c] rounded-lg transition-colors"
                 aria-label="Close dialog"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-[#71767b]" />
               </button>
             </div>
 
-            <div className="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+            <div className="mb-4 p-4 bg-[#ffad1f]/10 border border-[#ffad1f]/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-                <p className="text-amber-300 text-sm">
+                <AlertCircle className="w-5 h-5 text-[#ffad1f] mt-0.5 shrink-0" />
+                <p className="text-[#ffd166] text-sm">
                   A withdrawal code is required to process this withdrawal. Please contact support to purchase a
                   withdrawal code.
                 </p>
@@ -889,7 +881,7 @@ export default function WalletPage() {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="withdrawalCode" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="withdrawalCode" className="block text-sm font-medium text-[#e7e9ea] mb-2">
                 Withdrawal Code
               </label>
               <input
@@ -897,12 +889,12 @@ export default function WalletPage() {
                 id="withdrawalCode"
                 value={withdrawalCodeEntry}
                 onChange={(e) => { setWithdrawalCodeEntry(e.target.value); setCodeError("") }}
-                className="w-full px-4 py-3 bg-[#0a1628] border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-[#16181c] border border-[#2f3336] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:border-[#1d9bf0]"
                 placeholder="Enter withdrawal code"
                 autoFocus
               />
               {codeError && (
-                <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                <p className="mt-2 text-sm text-[#f4212e] flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {codeError}
                 </p>
@@ -913,11 +905,11 @@ export default function WalletPage() {
               <Button
                 onClick={() => setShowWithdrawalCodeDialog(false)}
                 variant="outline"
-                className="flex-1 border-gray-600 text-gray-300 hover:bg-blue-900/20 bg-transparent"
+                className="flex-1 border-[#536471] text-[#e7e9ea] hover:bg-[#16181c] bg-transparent"
               >
                 Cancel
               </Button>
-              <Button onClick={handleWithdrawalCodeSubmit} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white">
+              <Button onClick={handleWithdrawalCodeSubmit} className="flex-1 bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white">
                 <KeyRound className="w-4 h-4 mr-2" />
                 Verify Code
               </Button>

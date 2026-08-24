@@ -70,7 +70,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">5. Disclaimer</h2>
               <p className="leading-relaxed">
-                The materials on TrexSnipeAI are provided on an 'as is' basis. TrexSnipeAI makes no warranties, expressed or
+                The materials on xSnipeAI are provided on an 'as is' basis. xSnipeAI makes no warranties, expressed or
                 implied, and hereby disclaims and negates all other warranties including, without limitation, implied
                 warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of
                 intellectual property or other violation of rights.
@@ -80,9 +80,9 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">6. Limitations of Liability</h2>
               <p className="leading-relaxed">
-                In no event shall TrexSnipeAI or its suppliers be liable for any damages (including, without limitation,
+                In no event shall xSnipeAI or its suppliers be liable for any damages (including, without limitation,
                 damages for loss of data or profit, or due to business interruption) arising out of the use or inability
-                to use TrexSnipeAI, even if TrexSnipeAI or a TrexSnipeAI authorized representative has been notified orally or
+                to use xSnipeAI, even if xSnipeAI or a xSnipeAI authorized representative has been notified orally or
                 in writing of the possibility of such damage.
               </p>
             </section>
@@ -90,7 +90,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">7. Service Modifications</h2>
               <p className="leading-relaxed">
-                TrexSnipeAI reserves the right to modify or discontinue, temporarily or permanently, the service (or any
+                xSnipeAI reserves the right to modify or discontinue, temporarily or permanently, the service (or any
                 part thereof) with or without notice. You agree that TrexSnipeAI shall not be liable to you or to any
                 third party for any modification, suspension, or discontinuance of the service.
               </p>

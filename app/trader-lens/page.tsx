@@ -71,26 +71,26 @@ export default function TraderLensPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <div className="relative">
         <Header />
         <main className="container mx-auto px-2.5 py-8">
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+              <div className="w-12 h-12 bg-[#1d9bf0] rounded-xl flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">Trader Lens</h1>
-                <p className="text-gray-400">Track and analyze top performing traders</p>
+                <p className="text-[#71767b]">Track and analyze top performing traders</p>
               </div>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-20 text-gray-400">Loading top traders...</div>
+            <div className="text-center py-20 text-[#71767b]">Loading top traders...</div>
           ) : tokens.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">No trader data available</div>
+            <div className="text-center py-20 text-[#71767b]">No trader data available</div>
           ) : (
             <div className="grid gap-4">
               {tokens.slice(0, 10).map((token, index) => {
@@ -98,14 +98,14 @@ export default function TraderLensPage() {
                 return (
                   <div
                     key={index}
-                    className="group relative bg-[#0a1628] border border-blue-900/30 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-900/20"
+                    className="group relative bg-[#16181c] border border-[#2f3336] rounded-xl p-6 hover:border-[#536471] transition-all hover:shadow-lg hover:shadow-black/30"
                   >
-                    <div className="absolute inset-0 rounded-xl bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors" />
+                    <div className="absolute inset-0 rounded-xl bg-[#1d9bf0]/0 group-hover:bg-[#1d9bf0]/[0.03] transition-colors" />
 
                     <div className="relative flex items-center justify-between flex-wrap gap-4">
                       <div className="flex items-center gap-4">
                         <div className="relative">
-                          <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/30">
+                          <div className="w-16 h-16 rounded-full overflow-hidden bg-[#1d9bf0] flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                             {token.profile.icon ? (
                               <Image
                                 src={token.profile.icon || "/placeholder.svg"}
@@ -126,34 +126,34 @@ export default function TraderLensPage() {
                         <div className="flex-1">
                           <h3 className="text-white font-bold text-xl mb-2">
                             Pro Trader #{index + 1} •{" "}
-                            <span className="text-blue-400">
+                            <span className="text-[#1d9bf0]">
                               {token.profile.tokenAddress.slice(0, 4)}...{token.profile.tokenAddress.slice(-4)}
                             </span>
                           </h3>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                              <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+                            <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                              <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                                 <Target className="w-3 h-3" />
                                 <span>Win Rate</span>
                               </div>
-                              <p className="text-blue-400 font-bold text-lg">{stats.winRate}%</p>
+                              <p className="text-[#1d9bf0] font-bold text-lg">{stats.winRate}%</p>
                             </div>
-                            <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                              <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+                            <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                              <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                                 <TrendingUp className="w-3 h-3" />
                                 <span>30d Return</span>
                               </div>
-                              <p className="text-blue-400 font-bold text-lg">+{stats.returns}%</p>
+                              <p className="text-[#1d9bf0] font-bold text-lg">+{stats.returns}%</p>
                             </div>
-                            <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                              <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+                            <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                              <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                                 <Users className="w-3 h-3" />
                                 <span>Followers</span>
                               </div>
                               <p className="text-white font-bold text-lg">{stats.followers}</p>
                             </div>
-                            <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
-                              <div className="flex items-center gap-1 text-gray-400 text-xs mb-1">
+                            <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
+                              <div className="flex items-center gap-1 text-[#71767b] text-xs mb-1">
                                 <BarChart3 className="w-3 h-3" />
                                 <span>Volume</span>
                               </div>
@@ -162,7 +162,7 @@ export default function TraderLensPage() {
                           </div>
                         </div>
                       </div>
-                      <Button className="bg-blue-700 hover:bg-blue-800 text-white shadow-lg shadow-blue-900/30">
+                      <Button className="bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white shadow-lg shadow-[#1d9bf0]/20">
                         View Profile
                       </Button>
                     </div>

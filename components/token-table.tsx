@@ -52,11 +52,11 @@ export default function TokenTable() {
   const limitedGroups = tokenGroups.slice(0, 4)
 
   return (
-    <section className="relative py-12 px-[10px]">
+    <section className="relative py-12 px-[10px] bg-black">
       <div className="container mx-auto">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg">
+            <div className="p-2 bg-[#1d9bf0] rounded-lg shadow-lg shadow-[#1d9bf0]/20">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-white">Trending Tokens</h2>
@@ -64,15 +64,15 @@ export default function TokenTable() {
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-4 mb-6">
-            <div className="flex items-center gap-2 bg-gray-900/50 rounded-xl p-1 border border-purple-900/30">
+            <div className="flex items-center gap-2 bg-[#16181c] rounded-xl p-1 border border-[#2f3336]">
               <Button
                 variant={timeFilter === "24h" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setTimeFilter("24h")}
                 className={
                   timeFilter === "24h"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-600/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800"
+                    ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-lg shadow-[#1d9bf0]/20"
+                    : "text-gray-500 hover:text-white hover:bg-[#2f3336]"
                 }
               >
                 24h
@@ -83,8 +83,8 @@ export default function TokenTable() {
                 onClick={() => setTimeFilter("6h")}
                 className={
                   timeFilter === "6h"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-600/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800"
+                    ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-lg shadow-[#1d9bf0]/20"
+                    : "text-gray-500 hover:text-white hover:bg-[#2f3336]"
                 }
               >
                 6h
@@ -95,8 +95,8 @@ export default function TokenTable() {
                 onClick={() => setTimeFilter("1h")}
                 className={
                   timeFilter === "1h"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-600/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800"
+                    ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-lg shadow-[#1d9bf0]/20"
+                    : "text-gray-500 hover:text-white hover:bg-[#2f3336]"
                 }
               >
                 1h
@@ -107,8 +107,8 @@ export default function TokenTable() {
                 onClick={() => setTimeFilter("5m")}
                 className={
                   timeFilter === "5m"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-600/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800"
+                    ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-lg shadow-[#1d9bf0]/20"
+                    : "text-gray-500 hover:text-white hover:bg-[#2f3336]"
                 }
               >
                 5m
@@ -118,7 +118,7 @@ export default function TokenTable() {
             <Button
               variant="outline"
               size="sm"
-              className="border-purple-500/30 text-gray-300 hover:bg-purple-900/20 bg-gray-900/50 hover:border-purple-500/50"
+              className="border-[#2f3336] text-gray-400 hover:bg-[#1d9bf0]/10 bg-[#16181c] hover:border-[#1d9bf0]/50 hover:text-white"
             >
               <Filter className="w-4 h-4 mr-2" />
               Filters
@@ -127,7 +127,7 @@ export default function TokenTable() {
             <Button
               variant="outline"
               size="sm"
-              className="border-purple-500/30 text-gray-300 hover:bg-purple-900/20 bg-gray-900/50 hover:border-purple-500/50"
+              className="border-[#2f3336] text-gray-400 hover:bg-[#1d9bf0]/10 bg-[#16181c] hover:border-[#1d9bf0]/50 hover:text-white"
             >
               <Settings className="w-4 h-4 mr-2" />
               Settings
@@ -136,29 +136,29 @@ export default function TokenTable() {
 
           {/* Filter Pills */}
           <div className="flex flex-wrap gap-2 text-sm">
-            <span className="text-gray-400 font-medium">Try our filters for a secure experience:</span>
-            <span className="px-3 py-1.5 bg-gray-900/50 border border-purple-500/30 rounded-full text-gray-300 hover:bg-purple-900/20 transition-colors cursor-pointer">
+            <span className="text-gray-500 font-medium">Try our filters for a secure experience:</span>
+            <span className="px-3 py-1.5 bg-[#16181c] border border-[#2f3336] rounded-full text-gray-400 hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0]/30 transition-colors cursor-pointer">
               Hide Scams
             </span>
-            <span className="px-3 py-1.5 bg-gray-900/50 border border-purple-500/30 rounded-full text-gray-300 hover:bg-purple-900/20 transition-colors cursor-pointer">
+            <span className="px-3 py-1.5 bg-[#16181c] border border-[#2f3336] rounded-full text-gray-400 hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0]/30 transition-colors cursor-pointer">
               Hide Rugs
             </span>
-            <span className="px-3 py-1.5 bg-gray-900/50 border border-purple-500/30 rounded-full text-gray-300 hover:bg-purple-900/20 transition-colors cursor-pointer">
+            <span className="px-3 py-1.5 bg-[#16181c] border border-[#2f3336] rounded-full text-gray-400 hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0]/30 transition-colors cursor-pointer">
               Mint Auth Disabled
             </span>
-            <span className="px-3 py-1.5 bg-gray-900/50 border border-purple-500/30 rounded-full text-gray-300 hover:bg-purple-900/20 transition-colors cursor-pointer">
+            <span className="px-3 py-1.5 bg-[#16181c] border border-[#2f3336] rounded-full text-gray-400 hover:bg-[#1d9bf0]/10 hover:border-[#1d9bf0]/30 transition-colors cursor-pointer">
               Freeze Auth Disabled
             </span>
-            <button className="px-3 py-1.5 bg-gradient-to-r from-purple-600/20 to-purple-700/20 border border-purple-500/50 rounded-full text-purple-300 hover:from-purple-600/30 hover:to-purple-700/30 transition-all font-medium">
+            <button className="px-3 py-1.5 bg-[#1d9bf0]/10 border border-[#1d9bf0]/40 rounded-full text-[#1d9bf0] hover:bg-[#1d9bf0]/20 transition-all font-medium">
               + All Filters
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-20 text-gray-400">Loading tokens...</div>
+          <div className="text-center py-20 text-gray-500">Loading tokens...</div>
         ) : tokens.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">No tokens found</div>
+          <div className="text-center py-20 text-gray-500">No tokens found</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
             {limitedGroups.map((group, groupIndex) => (

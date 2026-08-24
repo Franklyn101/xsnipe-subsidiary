@@ -28,31 +28,31 @@ export default function CopyTradePage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-[#050d1a]">
+      <div className="min-h-screen bg-black">
         <div className="relative">
           <Header />
           <main className="container mx-auto px-2.5 py-8">
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center max-w-md">
-                <div className="w-20 h-20 bg-blue-700 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-900/50">
+                <div className="w-20 h-20 bg-[#1d9bf0] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#1d9bf0]/20">
                   <Lock className="w-10 h-10 text-white" />
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">Connect Wallet Required</h2>
-                <p className="text-gray-400 mb-8">
+                <p className="text-[#71767b] mb-8">
                   Please connect your wallet to access copy trading features and start following top traders.
                 </p>
-                <div className="bg-[#0a1628] border border-blue-900/30 rounded-xl p-6">
-                  <div className="space-y-3 text-sm text-gray-400">
+                <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-6">
+                  <div className="space-y-3 text-sm text-[#71767b]">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-400" />
+                      <CheckCircle className="w-4 h-4 text-[#1d9bf0]" />
                       <span>Follow professional traders automatically</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-400" />
+                      <CheckCircle className="w-4 h-4 text-[#1d9bf0]" />
                       <span>Copy trades in real-time</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-400" />
+                      <CheckCircle className="w-4 h-4 text-[#1d9bf0]" />
                       <span>Manage your portfolio securely</span>
                     </div>
                   </div>
@@ -66,18 +66,18 @@ export default function CopyTradePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <div className="relative">
         <Header />
         <main className="container mx-auto px-2.5 py-8">
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+              <div className="w-12 h-12 bg-[#1d9bf0] rounded-xl flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                 <Copy className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">Copy Trade</h1>
-                <p className="text-gray-400">Automatically mirror successful traders</p>
+                <p className="text-[#71767b]">Automatically mirror successful traders</p>
               </div>
             </div>
           </div>
@@ -86,17 +86,17 @@ export default function CopyTradePage() {
             {traders.map((trader) => (
               <div
                 key={trader.id}
-                className="group relative bg-[#0a1628] border border-blue-900/30 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-xl hover:shadow-blue-900/20"
+                className="group relative bg-[#16181c] border border-[#2f3336] rounded-xl p-6 hover:border-[#536471] transition-all hover:shadow-xl hover:shadow-black/30"
               >
-                <div className="absolute inset-0 rounded-xl bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors" />
+                <div className="absolute inset-0 rounded-xl bg-[#1d9bf0]/0 group-hover:bg-[#1d9bf0]/[0.03] transition-colors" />
 
                 <div className="relative">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-14 h-14 bg-blue-700 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-900/30">
+                    <div className="w-14 h-14 bg-[#1d9bf0] rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-[#1d9bf0]/20">
                       {trader.id}
                     </div>
                     {trader.verified && (
-                      <span className="px-2 py-1 bg-blue-900/30 text-blue-400 rounded-lg text-xs flex items-center gap-1 border border-blue-700/30">
+                      <span className="px-2 py-1 bg-[#1d9bf0]/10 text-[#1d9bf0] rounded-lg text-xs flex items-center gap-1 border border-[#1d9bf0]/30">
                         <CheckCircle className="w-3 h-3" />
                         Verified
                       </span>
@@ -104,39 +104,41 @@ export default function CopyTradePage() {
                   </div>
 
                   <h3 className="text-white font-bold text-lg mb-2">{trader.name}</h3>
-                  <p className="text-gray-400 text-sm mb-4">Specialized in meme coins and early listings</p>
+                  <p className="text-[#71767b] text-sm mb-4">Specialized in meme coins and early listings</p>
 
                   <div className="space-y-3 mb-4">
-                    <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
+                    <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs">
+                        <div className="flex items-center gap-2 text-[#71767b] text-xs">
                           <Copy className="w-3 h-3" />
                           <span>Followers</span>
                         </div>
                         <span className="text-white font-bold">{trader.followers}</span>
                       </div>
                     </div>
-                    <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
+
+                    <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs">
+                        <div className="flex items-center gap-2 text-[#71767b] text-xs">
                           <Award className="w-3 h-3" />
                           <span>Success Rate</span>
                         </div>
-                        <span className="text-blue-400 font-bold">{trader.successRate}%</span>
+                        <span className="text-[#1d9bf0] font-bold">{trader.successRate}%</span>
                       </div>
                     </div>
-                    <div className="bg-[#050d1a] rounded-lg p-3 border border-blue-900/20">
+
+                    <div className="bg-[#0f1115] rounded-lg p-3 border border-[#2f3336]">
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs">
+                        <div className="flex items-center gap-2 text-[#71767b] text-xs">
                           <TrendingUp className="w-3 h-3" />
                           <span>Avg. Return</span>
                         </div>
-                        <span className="text-blue-400 font-bold">+{trader.avgReturn}%</span>
+                        <span className="text-[#1d9bf0] font-bold">+{trader.avgReturn}%</span>
                       </div>
                     </div>
                   </div>
 
-                  <Button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold shadow-lg shadow-blue-900/30">
+                  <Button className="w-full bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white font-semibold shadow-lg shadow-[#1d9bf0]/20">
                     Start Copying
                   </Button>
                 </div>

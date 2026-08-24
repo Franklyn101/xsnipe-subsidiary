@@ -74,24 +74,24 @@ export default function TrendingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <div className="relative">
         <Header />
         <main className="container mx-auto px-2.5 py-8">
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+              <div className="w-12 h-12 bg-[#1d9bf0] rounded-xl flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">Trending Tokens</h1>
-                <p className="text-gray-400">Discover the hottest tokens on Solana</p>
+                <p className="text-[#71767b]">Discover the hottest tokens on Solana</p>
               </div>
             </div>
 
             {/* Time filters */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              <div className="flex items-center gap-2 bg-[#0a1628] rounded-xl p-1 border border-blue-900/30">
+              <div className="flex items-center gap-2 bg-[#16181c] rounded-xl p-1 border border-[#2f3336]">
                 {["24h", "6h", "1h", "5m"].map((filter) => (
                   <Button
                     key={filter}
@@ -100,8 +100,8 @@ export default function TrendingPage() {
                     onClick={() => setTimeFilter(filter)}
                     className={
                       timeFilter === filter
-                        ? "bg-blue-700 text-white hover:bg-blue-800 shadow-lg shadow-blue-900/50"
-                        : "text-gray-400 hover:text-white hover:bg-blue-900/30"
+                        ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-lg shadow-[#1d9bf0]/20"
+                        : "text-[#71767b] hover:text-white hover:bg-[#1d1f23]"
                     }
                   >
                     {filter}
@@ -112,7 +112,7 @@ export default function TrendingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-blue-500/30 text-gray-300 hover:bg-blue-900/20 bg-[#0a1628] hover:border-blue-500/50"
+                className="border-[#2f3336] text-[#e7e9ea] hover:bg-[#1d1f23] bg-[#16181c] hover:border-[#536471]"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
@@ -121,7 +121,7 @@ export default function TrendingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-blue-500/30 text-gray-300 hover:bg-blue-900/20 bg-[#0a1628] hover:border-blue-500/50"
+                className="border-[#2f3336] text-[#e7e9ea] hover:bg-[#1d1f23] bg-[#16181c] hover:border-[#536471]"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
@@ -130,40 +130,40 @@ export default function TrendingPage() {
 
             {/* Filter pills */}
             <div className="flex flex-wrap gap-2 text-sm">
-              <span className="text-gray-400 font-medium">Try our filters for a secure experience:</span>
+              <span className="text-[#71767b] font-medium">Try our filters for a secure experience:</span>
               {["Hide Scams", "Hide Rugs", "Mint Auth Disabled", "Freeze Auth Disabled"].map((label) => (
                 <span
                   key={label}
-                  className="px-3 py-1.5 bg-[#0a1628] border border-blue-500/30 rounded-full text-gray-300 hover:bg-blue-900/20 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 bg-[#16181c] border border-[#2f3336] rounded-full text-[#e7e9ea] hover:bg-[#1d1f23] transition-colors cursor-pointer"
                 >
                   {label}
                 </span>
               ))}
-              <button className="px-3 py-1.5 bg-blue-900/20 border border-blue-500/40 rounded-full text-blue-300 hover:bg-blue-900/30 transition-all font-medium">
+              <button className="px-3 py-1.5 bg-[#1d9bf0]/10 border border-[#1d9bf0]/40 rounded-full text-[#1d9bf0] hover:bg-[#1d9bf0]/20 transition-all font-medium">
                 + All Filters
               </button>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-20 text-gray-400">Loading tokens...</div>
+            <div className="text-center py-20 text-[#71767b]">Loading tokens...</div>
           ) : tokens.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">No tokens found</div>
+            <div className="text-center py-20 text-[#71767b]">No tokens found</div>
           ) : (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {currentTokens.map((token, i) => (
                   <div
                     key={i}
-                    className="group relative bg-[#0a1628] border border-blue-900/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all hover:shadow-xl hover:shadow-blue-900/20"
+                    className="group relative bg-[#16181c] border border-[#2f3336] rounded-2xl p-6 hover:border-[#536471] transition-all hover:shadow-xl hover:shadow-black/30"
                   >
                     {/* Hover tint */}
-                    <div className="absolute inset-0 rounded-2xl bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors" />
+                    <div className="absolute inset-0 rounded-2xl bg-[#1d9bf0]/0 group-hover:bg-[#1d9bf0]/[0.03] transition-colors" />
 
                     <div className="relative">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-blue-700 flex items-center justify-center">
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#1d9bf0] flex items-center justify-center">
                             {token.profile.icon ? (
                               <Image
                                 src={token.profile.icon || "/placeholder.svg"}
@@ -179,26 +179,26 @@ export default function TrendingPage() {
                             <h3 className="text-white font-bold text-xl mb-1">
                               {token.profile.tokenAddress.slice(0, 4)}...{token.profile.tokenAddress.slice(-4)}
                             </h3>
-                            <p className="text-gray-400 text-sm font-mono">
+                            <p className="text-[#71767b] text-sm font-mono">
                               {token.profile.tokenAddress.slice(0, 20)}...
                             </p>
                           </div>
                         </div>
-                        <div className="px-3 py-1 bg-blue-700 rounded-full text-white text-sm font-bold shadow-lg shadow-blue-900/30">
+                        <div className="px-3 py-1 bg-[#1d9bf0] rounded-full text-white text-sm font-bold shadow-lg shadow-[#1d9bf0]/20">
                           #{i + 1}
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="bg-[#050d1a] rounded-xl p-4 border border-blue-900/20">
-                          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                        <div className="bg-[#0f1115] rounded-xl p-4 border border-[#2f3336]">
+                          <div className="flex items-center gap-2 text-[#71767b] text-sm mb-1">
                             <DollarSign className="w-4 h-4" />
                             <span>24h Volume</span>
                           </div>
                           <p className="text-white font-bold text-lg">{formatVolume(token.pairData.volume)}</p>
                         </div>
-                        <div className="bg-[#050d1a] rounded-xl p-4 border border-blue-900/20">
-                          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                        <div className="bg-[#0f1115] rounded-xl p-4 border border-[#2f3336]">
+                          <div className="flex items-center gap-2 text-[#71767b] text-sm mb-1">
                             <TrendingUp className="w-4 h-4" />
                             <span>Market Cap</span>
                           </div>
@@ -206,8 +206,8 @@ export default function TrendingPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-blue-900/20">
-                        <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <div className="flex items-center justify-between pt-4 border-t border-[#2f3336]">
+                        <div className="flex items-center gap-2 text-[#71767b] text-sm">
                           <Clock className="w-4 h-4" />
                           {token.pairData.pairCreatedAt ? (
                             <span>
@@ -220,7 +220,7 @@ export default function TrendingPage() {
                         <Button
                           size="sm"
                           onClick={() => handleTradeClick(token)}
-                          className="bg-blue-700 hover:bg-blue-800 text-white shadow-lg shadow-blue-900/30"
+                          className="bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white shadow-lg shadow-[#1d9bf0]/20"
                         >
                           Trade Now
                         </Button>
@@ -236,7 +236,7 @@ export default function TrendingPage() {
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
                     variant="outline"
-                    className="border-blue-500/30 text-gray-300 hover:bg-blue-900/20 bg-[#0a1628] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="border-[#2f3336] text-[#e7e9ea] hover:bg-[#1d1f23] bg-[#16181c] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     Previous
@@ -250,8 +250,8 @@ export default function TrendingPage() {
                         variant={currentPage === page ? "default" : "outline"}
                         className={
                           currentPage === page
-                            ? "bg-blue-700 text-white hover:bg-blue-800"
-                            : "border-blue-500/30 text-gray-300 hover:bg-blue-900/20 bg-[#0a1628]"
+                            ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8]"
+                            : "border-[#2f3336] text-[#e7e9ea] hover:bg-[#1d1f23] bg-[#16181c]"
                         }
                       >
                         {page}
@@ -263,7 +263,7 @@ export default function TrendingPage() {
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
                     variant="outline"
-                    className="border-blue-500/30 text-gray-300 hover:bg-blue-900/20 bg-[#0a1628] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="border-[#2f3336] text-[#e7e9ea] hover:bg-[#1d1f23] bg-[#16181c] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                     <ChevronRight className="w-4 h-4 ml-2" />

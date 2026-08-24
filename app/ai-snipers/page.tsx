@@ -195,35 +195,35 @@ export default function AISnipersPage() {
   const expectedWinRate = configCodeEnabled ? 75 : 70
 
   return (
-    <div className="min-h-screen bg-[#050d1a]">
+    <div className="min-h-screen bg-black">
       <Header />
       <main className="container mx-auto px-2.5 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-14 h-14 bg-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+                <div className="w-14 h-14 bg-[#1d9bf0] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1d9bf0]/20">
                   <Brain className="w-7 h-7 text-white" />
                 </div>
                 {isSniperActive && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-400 rounded-full animate-pulse border-2 border-[#050d1a]" />
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#1d9bf0] rounded-full animate-pulse border-2 border-black" />
                 )}
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-2">
                   AI Snipers
                   {isSniperActive && (
-                    <span className="text-sm font-normal text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/30">
+                    <span className="text-sm font-normal text-[#1d9bf0] bg-[#1d9bf0]/10 px-3 py-1 rounded-full border border-[#1d9bf0]/30">
                       Live
                     </span>
                   )}
                   {configCodeEnabled && (
-                    <span className="text-sm font-normal text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full border border-yellow-400/30">
+                    <span className="text-sm font-normal text-[#71767b] bg-[#2f3336] px-3 py-1 rounded-full border border-[#536471]">
                       Boosted
                     </span>
                   )}
                 </h1>
-                <p className="text-gray-400">Automated trading bot with {expectedWinRate}% win rate</p>
+                <p className="text-[#71767b]">Automated trading bot with {expectedWinRate}% win rate</p>
               </div>
             </div>
           </div>
@@ -231,28 +231,32 @@ export default function AISnipersPage() {
 
         {!walletAddress ? (
           <div className="max-w-2xl mx-auto">
-            <div className="bg-[#0a1628] border border-red-500/30 rounded-2xl p-12 text-center">
-              <Brain className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <div className="bg-[#16181c] border border-[#2f3336] rounded-2xl p-12 text-center">
+              <Brain className="w-16 h-16 text-[#71767b] mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-2">Wallet Not Connected</h2>
-              <p className="text-gray-400">Please connect your wallet to start using the AI Sniper</p>
+              <p className="text-[#71767b]">Please connect your wallet to start using the AI Sniper</p>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1 space-y-6">
               {/* Control Panel */}
-              <div className="bg-blue-900/15 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="bg-[#16181c] border border-[#2f3336] rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white">Control Panel</h2>
                   <div
-                    className={`w-3 h-3 rounded-full ${isSniperActive ? "bg-blue-400 animate-pulse" : "bg-gray-500"}`}
+                    className={`w-3 h-3 rounded-full ${
+                      isSniperActive ? "bg-[#1d9bf0] animate-pulse" : "bg-[#71767b]"
+                    }`}
                   />
                 </div>
 
                 <Button
                   onClick={() => setIsSniperActive(!isSniperActive)}
                   className={`w-full py-6 rounded-xl font-bold text-lg mb-4 ${
-                    isSniperActive ? "bg-red-600 hover:bg-red-700" : "bg-blue-700 hover:bg-blue-800"
+                    isSniperActive
+                      ? "bg-[#f4212e] hover:bg-[#dc1c28]"
+                      : "bg-[#1d9bf0] hover:bg-[#1a8cd8]"
                   } text-white transition-all transform hover:scale-105`}
                 >
                   {isSniperActive ? (
@@ -264,32 +268,32 @@ export default function AISnipersPage() {
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Status</span>
-                    <span className={`font-semibold ${isSniperActive ? "text-blue-400" : "text-gray-400"}`}>
+                    <span className="text-[#71767b]">Status</span>
+                    <span className={`font-semibold ${isSniperActive ? "text-[#1d9bf0]" : "text-[#71767b]"}`}>
                       {isSniperActive ? "Active" : "Idle"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Win Rate</span>
-                    <span className="font-semibold text-blue-400">{winRate.toFixed(1)}%</span>
+                    <span className="text-[#71767b]">Win Rate</span>
+                    <span className="font-semibold text-[#1d9bf0]">{winRate.toFixed(1)}%</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Interval</span>
-                    <span className="font-semibold text-blue-400">{config.snipeInterval}ms</span>
+                    <span className="text-[#71767b]">Interval</span>
+                    <span className="font-semibold text-[#1d9bf0]">{config.snipeInterval}ms</span>
                   </div>
                 </div>
               </div>
 
               {/* Configuration */}
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl p-6">
+              <div className="bg-[#16181c] border border-[#2f3336] rounded-2xl p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Settings className="w-5 h-5 text-blue-400" />
+                  <Settings className="w-5 h-5 text-[#1d9bf0]" />
                   <h2 className="text-xl font-bold text-white">Configuration</h2>
                 </div>
 
-                <div className="mb-6 p-4 bg-blue-900/10 border border-blue-500/20 rounded-xl">
-                  <label className="text-gray-300 text-sm mb-2 block font-semibold">Configuration Code</label>
-                  <p className="text-gray-400 text-xs mb-3">Enter code to boost win rate to 75%</p>
+                <div className="mb-6 p-4 bg-[#1d9bf0]/5 border border-[#1d9bf0]/20 rounded-xl">
+                  <label className="text-[#e7e9ea] text-sm mb-2 block font-semibold">Configuration Code</label>
+                  <p className="text-[#71767b] text-xs mb-3">Enter code to boost win rate to 75%</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -297,18 +301,18 @@ export default function AISnipersPage() {
                       onChange={(e) => setConfigCode(e.target.value)}
                       placeholder="Enter code..."
                       disabled={configCodeEnabled}
-                      className="flex-1 bg-[#050d1a] border border-blue-500/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 bg-black border border-[#2f3336] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#1d9bf0] disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <Button
                       onClick={handleConfigCodeSubmit}
                       disabled={configCodeEnabled || !configCode.trim()}
-                      className="bg-blue-700 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {configCodeEnabled ? "Activated" : "Activate"}
                     </Button>
                   </div>
                   {configCodeEnabled && (
-                    <p className="text-blue-400 text-xs mt-2 flex items-center gap-1">
+                    <p className="text-[#1d9bf0] text-xs mt-2 flex items-center gap-1">
                       <Zap className="w-3 h-3" />
                       Configuration code activated - Win rate boosted to 75%!
                     </p>
@@ -323,25 +327,25 @@ export default function AISnipersPage() {
                     { label: "Snipe Interval (ms)", key: "snipeInterval", step: "100", type: "number" },
                   ].map(({ label, key, step, type }) => (
                     <div key={key}>
-                      <label className="text-gray-400 text-sm mb-2 block">{label}</label>
+                      <label className="text-[#71767b] text-sm mb-2 block">{label}</label>
                       <input
                         type={type}
                         step={step}
                         value={config[key as keyof typeof config]}
                         onChange={(e) => setConfig({ ...config, [key]: e.target.value })}
                         disabled={isSniperActive}
-                        className="w-full bg-[#050d1a] border border-blue-500/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                        className="w-full bg-black border border-[#2f3336] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#1d9bf0] disabled:opacity-50"
                       />
                     </div>
                   ))}
 
                   <div>
-                    <label className="text-gray-400 text-sm mb-2 block">Gas Price</label>
+                    <label className="text-[#71767b] text-sm mb-2 block">Gas Price</label>
                     <select
                       value={config.gasPrice}
                       onChange={(e) => setConfig({ ...config, gasPrice: e.target.value })}
                       disabled={isSniperActive}
-                      className="w-full bg-[#050d1a] border border-blue-500/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                      className="w-full bg-black border border-[#2f3336] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#1d9bf0] disabled:opacity-50"
                     >
                       <option value="auto">Auto</option>
                       <option value="low">Low</option>
@@ -352,7 +356,7 @@ export default function AISnipersPage() {
                 </div>
 
                 {isSniperActive && (
-                  <p className="text-yellow-400 text-xs mt-4 flex items-center gap-1">
+                  <p className="text-[#f5c518] text-xs mt-4 flex items-center gap-1">
                     <Zap className="w-3 h-3" />
                     Stop the sniper to modify configuration
                   </p>
@@ -361,32 +365,32 @@ export default function AISnipersPage() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-blue-400 mb-2">
+                <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[#1d9bf0] mb-2">
                     <Target className="w-4 h-4" />
                     <span className="text-xs font-semibold">Total</span>
                   </div>
                   <p className="text-white font-bold text-2xl">{stats.totalSnipes}</p>
                 </div>
-                <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-blue-400 mb-2">
+                <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[#1d9bf0] mb-2">
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-xs font-semibold">Success</span>
                   </div>
                   <p className="text-white font-bold text-2xl">{stats.successfulSnipes}</p>
                 </div>
-                <div className="bg-[#0a1628] border border-blue-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-blue-400 mb-2">
+                <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[#1d9bf0] mb-2">
                     <DollarSign className="w-4 h-4" />
                     <span className="text-xs font-semibold">Profit</span>
                   </div>
-                  <p className={`font-bold text-xl ${profits >= 0 ? "text-blue-400" : "text-red-400"}`}>
+                  <p className={`font-bold text-xl ${profits >= 0 ? "text-[#1d9bf0]" : "text-[#f4212e]"}`}>
                     {profits >= 0 ? "+" : ""}
                     {profits.toFixed(4)}
                   </p>
                 </div>
-                <div className="bg-[#0a1628] border border-yellow-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-yellow-400 mb-2">
+                <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[#71767b] mb-2">
                     <Activity className="w-4 h-4" />
                     <span className="text-xs font-semibold">Volume</span>
                   </div>
@@ -397,41 +401,41 @@ export default function AISnipersPage() {
 
             <div className="lg:col-span-2 space-y-6">
               {/* Live Snipes */}
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl overflow-hidden">
-                <div className="p-4 border-b border-blue-900/30 flex items-center justify-between">
+              <div className="bg-[#16181c] border border-[#2f3336] rounded-2xl overflow-hidden">
+                <div className="p-4 border-b border-[#2f3336] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-yellow-400" />
+                    <Zap className="w-5 h-5 text-[#f5c518]" />
                     <h3 className="text-white font-bold">Live Snipes</h3>
                   </div>
                   {liveSnipes.length > 0 && (
-                    <span className="text-xs text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full">
+                    <span className="text-xs text-[#f5c518] bg-[#f5c518]/10 px-2 py-1 rounded-full">
                       {liveSnipes.length} Active
                     </span>
                   )}
                 </div>
-                <div className="divide-y divide-blue-900/20 max-h-64 overflow-y-auto">
+                <div className="divide-y divide-[#2f3336] max-h-64 overflow-y-auto">
                   {liveSnipes.length === 0 ? (
-                    <div className="p-8 text-center text-gray-400">
+                    <div className="p-8 text-center text-[#71767b]">
                       {isSniperActive ? "Scanning for opportunities..." : "No active snipes"}
                     </div>
                   ) : (
                     liveSnipes.map((snipe) => (
-                      <div key={snipe.id} className="p-4 flex items-center justify-between bg-yellow-400/5 animate-pulse">
+                      <div key={snipe.id} className="p-4 flex items-center justify-between bg-[#f5c518]/5 animate-pulse">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-yellow-400/20 rounded-lg flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-yellow-400" />
+                          <div className="w-10 h-10 bg-[#f5c518]/10 rounded-lg flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-[#f5c518]" />
                           </div>
                           <div>
                             <p className="text-white font-semibold">{snipe.token}</p>
-                            <p className="text-gray-400 text-sm">Amount: {snipe.amount.toFixed(4)} SOL</p>
+                            <p className="text-[#71767b] text-sm">Amount: {snipe.amount.toFixed(4)} SOL</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-yellow-400 font-bold text-sm">Processing</div>
+                          <div className="text-[#f5c518] font-bold text-sm">Processing</div>
                           <div className="flex gap-1 mt-1">
-                            <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce" />
-                            <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce delay-100" />
-                            <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce delay-200" />
+                            <div className="w-1.5 h-1.5 bg-[#f5c518] rounded-full animate-bounce" />
+                            <div className="w-1.5 h-1.5 bg-[#f5c518] rounded-full animate-bounce delay-100" />
+                            <div className="w-1.5 h-1.5 bg-[#f5c518] rounded-full animate-bounce delay-200" />
                           </div>
                         </div>
                       </div>
@@ -441,24 +445,24 @@ export default function AISnipersPage() {
               </div>
 
               {/* Snipe History */}
-              <div className="bg-[#0a1628] border border-blue-500/30 rounded-2xl overflow-hidden">
-                <div className="p-4 border-b border-blue-900/30 flex items-center justify-between">
+              <div className="bg-[#16181c] border border-[#2f3336] rounded-2xl overflow-hidden">
+                <div className="p-4 border-b border-[#2f3336] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-blue-400" />
+                    <BarChart3 className="w-5 h-5 text-[#1d9bf0]" />
                     <h3 className="text-white font-bold">Snipe History</h3>
                   </div>
                   {snipeHistory.length > 0 && (
-                    <span className="text-xs text-blue-400">{snipeHistory.length} total</span>
+                    <span className="text-xs text-[#1d9bf0]">{snipeHistory.length} total</span>
                   )}
                 </div>
-                <div className="divide-y divide-blue-900/20 max-h-[600px] overflow-y-auto">
+                <div className="divide-y divide-[#2f3336] max-h-[600px] overflow-y-auto">
                   {snipeHistory.length === 0 ? (
-                    <div className="p-8 text-center text-gray-400">No snipes yet. Start the bot to begin!</div>
+                    <div className="p-8 text-center text-[#71767b]">No snipes yet. Start the bot to begin!</div>
                   ) : (
                     snipeHistory.map((snipe, index) => (
                       <div
                         key={snipe.id}
-                        className="p-4 hover:bg-blue-900/10 transition-colors"
+                        className="p-4 hover:bg-[#1d9bf0]/5 transition-colors"
                         style={{ animation: `fadeIn 0.3s ease-in ${index * 0.05}s` }}
                       >
                         <div className="flex items-center justify-between">
@@ -466,19 +470,19 @@ export default function AISnipersPage() {
                             <div
                               className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                                 snipe.status === "success"
-                                  ? "bg-blue-900/30 border border-blue-500/30"
-                                  : "bg-red-900/30 border border-red-500/30"
+                                  ? "bg-[#1d9bf0]/10 border border-[#1d9bf0]/30"
+                                  : "bg-[#f4212e]/10 border border-[#f4212e]/30"
                               }`}
                             >
                               {snipe.status === "success" ? (
-                                <TrendingUp className="w-5 h-5 text-blue-400" />
+                                <TrendingUp className="w-5 h-5 text-[#1d9bf0]" />
                               ) : (
-                                <TrendingUp className="w-5 h-5 text-red-400 rotate-180" />
+                                <TrendingUp className="w-5 h-5 text-[#f4212e] rotate-180" />
                               )}
                             </div>
                             <div>
                               <p className="text-white font-semibold">{snipe.token}</p>
-                              <p className="text-gray-400 text-sm">
+                              <p className="text-[#71767b] text-sm">
                                 {snipe.timestamp
                                   ? formatDistanceToNow(
                                       snipe.timestamp.toDate ? snipe.timestamp.toDate() : new Date(snipe.timestamp),
@@ -489,11 +493,11 @@ export default function AISnipersPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className={`font-bold ${snipe.profit > 0 ? "text-blue-400" : "text-red-400"}`}>
+                            <p className={`font-bold ${snipe.profit > 0 ? "text-[#1d9bf0]" : "text-[#f4212e]"}`}>
                               {snipe.profit > 0 ? "+" : ""}
                               {snipe.profit?.toFixed(4) || "0.0000"} SOL
                             </p>
-                            <p className="text-gray-400 text-sm">{snipe.amount?.toFixed(4)} SOL</p>
+                            <p className="text-[#71767b] text-sm">{snipe.amount?.toFixed(4)} SOL</p>
                           </div>
                         </div>
                       </div>

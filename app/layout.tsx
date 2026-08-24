@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: "Xsnipe | Solana Token Sniper",
     description:
       "Snipe & Sell Solana Tokens at Hyperspeed. The fastest Solana memecoin sniper bot with AI-powered trading.",
-    url: "https://trexsnipe.com",
+    url: "https://xsnipe.com",
     siteName: "Xsnipe",
     images: [
       {

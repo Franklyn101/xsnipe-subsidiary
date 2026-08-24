@@ -106,17 +106,17 @@ export default function Header() {
         <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md animate-in fade-in duration-300 lg:hidden" />
       )}
 
-      <header className="sticky top-0 z-50 bg-[#050d1a] border-b border-blue-900/30">
+      <header className="sticky top-0 z-50 bg-black border-b border-gray-800">
         <div className="container mx-auto px-9 py-5">
           <div className="flex items-center justify-between gap-8">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
+              {/* <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                <Zap className="w-6 h-6 text-black" />
+              </div> */}
               <div className="text-xl font-bold">
                 <span className="text-white text-4xl">x</span>
-                <span className="text-blue-400">Snipe</span>
+                <span className="text-[#1d9bf0]">Snipe</span>
               </div>
             </Link>
 
@@ -176,7 +176,7 @@ export default function Header() {
             {/* Right Side */}
             <div className="flex items-center gap-3 flex-shrink-0">
               {/* Search Bar */}
-              <div className="hidden xl:flex items-center gap-2 bg-[#0a1628] rounded-lg px-3 py-2 border border-blue-900/40">
+              <div className="hidden xl:flex items-center gap-2 bg-[#16181c] rounded-lg px-3 py-2 border border-gray-800">
                 <Search className="w-4 h-4 text-gray-400" />
                 <input
                   type="text"
@@ -189,9 +189,9 @@ export default function Header() {
                 <div className="hidden md:flex items-center gap-2">
                   <Link
                     href="/wallet"
-                    className="flex items-center gap-2 bg-blue-900/30 border border-blue-500/30 rounded-lg px-3 py-2 hover:bg-blue-900/40 transition-colors"
+                    className="flex items-center gap-2 bg-[#16181c] border border-gray-700 rounded-lg px-3 py-2 hover:bg-[#1d1f23] transition-colors"
                   >
-                    <WalletIcon className="w-4 h-4 text-blue-400" />
+                    <WalletIcon className="w-4 h-4 text-[#1d9bf0]" />
                     <span className="text-white text-sm font-semibold">{formatAddress(walletAddress)}</span>
                   </Link>
                   <Button
@@ -206,7 +206,7 @@ export default function Header() {
               ) : (
                 <Button
                   onClick={() => setIsWalletModalOpen(true)}
-                  className="hidden md:block bg-blue-700 hover:bg-blue-800 text-white font-semibold"
+                  className="hidden md:block bg-white hover:bg-gray-200 text-black font-semibold"
                 >
                   Sign in
                 </Button>
@@ -216,24 +216,24 @@ export default function Header() {
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild className="lg:hidden">
                   <Button variant="ghost" size="icon" className="w-12 h-12 relative group">
-                    <div className="absolute inset-0 bg-blue-700/20 rounded-lg group-hover:bg-blue-700/30 transition-colors" />
+                    <div className="absolute inset-0 bg-gray-800/60 rounded-lg group-hover:bg-gray-700/70 transition-colors" />
                     <Menu className="w-7 h-7 text-white relative z-10 group-hover:scale-110 transition-transform" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent
                   side="right"
-                  className="bg-[#050d1a] border-blue-900/50 w-80 animate-in slide-in-from-right duration-300"
+                  className="bg-black border-gray-800 w-80 animate-in slide-in-from-right duration-300"
                 >
                   <div className="flex flex-col h-full">
                     {/* Mobile menu header */}
-                    <div className="py-8 px-4 border-b border-blue-900/30 flex-shrink-0 animate-in fade-in slide-in-from-top duration-500">
+                    <div className="py-8 px-4 border-b border-gray-800 flex-shrink-0 animate-in fade-in slide-in-from-top duration-500">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
-                          <Zap className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                          <Zap className="w-4 h-4 text-black" />
                         </div>
                         <h2 className="text-xl font-bold text-white">
                           <span className="text-white">X</span>
-                          <span className="text-blue-400">Snipe</span>
+                          <span className="text-[#1d9bf0]">Snipe</span>
                         </h2>
                       </div>
                       <p className="text-gray-400 text-sm mt-1">Navigate the platform</p>
@@ -244,10 +244,10 @@ export default function Header() {
                       <Link
                         href="/trending"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-75"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-75"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <TrendingUp className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <TrendingUp className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">Trending</div>
@@ -258,10 +258,10 @@ export default function Header() {
                       <Link
                         href="/new-pairs"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-100"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-100"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <Sparkles className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <Sparkles className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">New Pairs</div>
@@ -272,10 +272,10 @@ export default function Header() {
                       <Link
                         href="/ai-snipers"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-150"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-150"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <Brain className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <Brain className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">AI Snipers</div>
@@ -286,10 +286,10 @@ export default function Header() {
                       <Link
                         href="/meme-vision"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-200"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-200"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <Eye className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <Eye className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">Meme Vision</div>
@@ -300,10 +300,10 @@ export default function Header() {
                       <Link
                         href="/trader-lens"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-[250ms]"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-[250ms]"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <Target className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <Target className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">Trader Lens</div>
@@ -314,10 +314,10 @@ export default function Header() {
                       <Link
                         href="/copy-trade"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-300"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-300"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <Copy className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <Copy className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">Copy Trade</div>
@@ -328,10 +328,10 @@ export default function Header() {
                       <Link
                         href="/wallet"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-blue-900/20 transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-[350ms]"
+                        className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-[#16181c] transition-all p-4 rounded-lg group animate-in slide-in-from-right duration-300 delay-[350ms]"
                       >
-                        <div className="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-700/30 group-hover:scale-110 transition-all">
-                          <WalletIcon className="w-5 h-5 text-blue-400 group-hover:rotate-12 transition-transform" />
+                        <div className="w-10 h-10 bg-[#16181c] rounded-lg flex items-center justify-center group-hover:bg-[#1d1f23] group-hover:scale-110 transition-all">
+                          <WalletIcon className="w-5 h-5 text-[#1d9bf0] group-hover:rotate-12 transition-transform" />
                         </div>
                         <div>
                           <div className="font-semibold">Wallet</div>
@@ -341,23 +341,23 @@ export default function Header() {
                     </nav>
 
                     {/* Footer */}
-                    <div className="pb-8 px-4 border-t border-blue-900/30 pt-6 flex-shrink-0 animate-in fade-in slide-in-from-bottom duration-500 delay-500">
+                    <div className="pb-8 px-4 border-t border-gray-800 pt-6 flex-shrink-0 animate-in fade-in slide-in-from-bottom duration-500 delay-500">
                       {walletAddress ? (
                         <div className="space-y-3">
                           <Link
                             href="/wallet"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center justify-between bg-blue-900/30 border border-blue-500/30 rounded-lg px-4 py-3 hover:bg-blue-900/40 transition-all hover:scale-[1.02]"
+                            className="flex items-center justify-between bg-[#16181c] border border-gray-700 rounded-lg px-4 py-3 hover:bg-[#1d1f23] transition-all hover:scale-[1.02]"
                           >
                             <div className="flex items-center gap-2">
-                              <WalletIcon className="w-4 h-4 text-blue-400" />
+                              <WalletIcon className="w-4 h-4 text-[#1d9bf0]" />
                               <span className="text-white text-sm font-semibold">{formatAddress(walletAddress)}</span>
                             </div>
                           </Link>
                           <Button
                             onClick={handleDisconnect}
                             variant="outline"
-                            className="w-full border-blue-500/30 text-white hover:bg-blue-900/20 bg-transparent hover:scale-[1.02] transition-all"
+                            className="w-full border-gray-700 text-white hover:bg-[#16181c] bg-transparent hover:scale-[1.02] transition-all"
                           >
                             <LogOut className="w-4 h-4 mr-2" />
                             Disconnect
@@ -366,7 +366,7 @@ export default function Header() {
                       ) : (
                         <Button
                           onClick={() => setIsWalletModalOpen(true)}
-                          className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold hover:scale-[1.02] transition-all"
+                          className="w-full bg-white hover:bg-gray-200 text-black font-semibold hover:scale-[1.02] transition-all"
                         >
                           Connect Wallet
                         </Button>
