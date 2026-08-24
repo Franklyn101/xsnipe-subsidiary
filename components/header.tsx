@@ -368,7 +368,7 @@ export default function Header() {
                           onClick={() => setIsWalletModalOpen(true)}
                           className="w-full bg-white hover:bg-gray-200 text-black font-semibold hover:scale-[1.02] transition-all"
                         >
-                          Connect Wallet
+                          Sign in
                         </Button>
                       )}
                     </div>
